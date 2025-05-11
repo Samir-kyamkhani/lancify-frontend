@@ -177,7 +177,7 @@ export const invoices = [
     ],
     currency: "USD",
     taxRate: 10,
-    // dskjdskljdsfk
+    // check
   },
   {
     invoiceId: "INV-005",
