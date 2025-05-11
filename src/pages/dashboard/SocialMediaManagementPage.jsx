@@ -21,7 +21,7 @@ export default function SocialMediaManagementPage() {
     },
     {
       platform: "Twitter",
-      handle: "@FreelanceFlowApp",
+      handle: "@lancify",
       content:
         "Did you know you can manage invoices directly within Freelance Flow? #invoicing #freelancetools",
       date: "May 7, 2025 at 3:47 PM",
@@ -32,7 +32,7 @@ export default function SocialMediaManagementPage() {
     },
     {
       platform: "Twitter",
-      handle: "@FreelanceFlowApp",
+      handle: "@lancify",
       content:
         "Exciting new features coming soon to Freelance Flow! Stay tuned. #freelance #productivity",
       date: "May 5, 2025 at 5:47 PM",
@@ -139,7 +139,7 @@ export default function SocialMediaManagementPage() {
             <div className="w-full">
               <div className="bg-white rounded-2xl shadow-sm p-4 space-y-3 border border-gray-100">
                 <div className="text-sm font-semibold text-gray-800">
-                  @FreelanceFlowApp
+                  @lancify
                 </div>
                 <p className="text-sm text-gray-700">
                   Exciting new features coming soon to Freelance Flow! Stay
