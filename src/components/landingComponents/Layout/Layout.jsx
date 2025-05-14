@@ -1,23 +1,19 @@
 import React from "react";
-import {Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import TitlesPages from "../TitlesPages";
 
-
 function Layout() {
-  
-
+  const locationPath = useLocation().pathname;
   return (
-    <div
-      className={`bg-gray-200 px-3 min-h-screen  py-1}`}
-    >
-      <TitlesPages/>
-      <Navbar />
+    <div className={`bg-gray-200 px-3 min-h-screen  py-1}`}>
+      <TitlesPages />
+      {locationPath != "/signup" && <Navbar />}
       <main>
         <Outlet />
       </main>
-      <Footer />
+      {locationPath != "/signup" && <Footer />}
     </div>
   );
 }

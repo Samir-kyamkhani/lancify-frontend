@@ -3,7 +3,7 @@ import axios from "axios";
 import { baseURL } from "../baseURL";
 
 const initialState = {
-  signup: {},
+  signup: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
   isLoading: false,
   error: null,
   success: null,
@@ -38,6 +38,8 @@ const authSlice = createSlice({
     googleSignupSuccess: (state, action) => {
       state.isLoading = false;
       state.signup = action.payload;
+      localStorage.setItem('user', JSON.stringify(action.payload));
+
       state.success = "Google signup successful. Account created!";
     },
     clearMessages: (state) => {
