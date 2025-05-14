@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import { IoIosArrowBack } from "react-icons/io";
+import { Link } from "react-router-dom";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -23,9 +25,14 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-md">
-        <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-900 mb-6">
-          Login
-        </h2>
+        <div className="relative">
+          <Link to='/' className="absolute cursor-pointer bg-blue-100 sm:top-1 p-2 rounded-lg left-0">
+            <IoIosArrowBack />
+          </Link>
+          <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-900 mb-6">
+            Login
+          </h2>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
@@ -52,9 +59,9 @@ const LoginPage = () => {
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="w-full border border-gray-200 hover:bg-black/5 bg-white py-2.5 px-4 rounded flex justify-center items-center gap-3 transition"
+            className="w-full border border-gray-200 hover:bg-black/5 bg-white py-2.5 px-4 rounded flex justify-center items-center gap-x-1 sm:gap-3 transition cursor-pointer"
           >
-            <FcGoogle fontSize={24} /> Continue with Google
+          Continue with Google <FcGoogle className="size-5 sm:size-6" />
           </button>
           <p className="text-center text-sm text-gray-700">
             Don't have an account?{" "}

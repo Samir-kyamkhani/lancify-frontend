@@ -3,7 +3,12 @@ import axios from "axios";
 import { baseURL } from "../baseURL";
 
 const initialState = {
-  signup: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
+  signup: localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null,
+  login: localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null,
   isLoading: false,
   error: null,
   success: null,
@@ -38,13 +43,23 @@ const authSlice = createSlice({
     googleSignupSuccess: (state, action) => {
       state.isLoading = false;
       state.signup = action.payload;
-      localStorage.setItem('user', JSON.stringify(action.payload));
+      localStorage.setItem("user", JSON.stringify(action.payload));
 
       state.success = "Google signup successful. Account created!";
     },
-    clearMessages: (state) => {
+    loginRequest: (state) => {
+      state.isLoading = true;
       state.error = null;
       state.success = null;
+    },
+    loginSuccess: (state, action) => {
+      state.isLoading = false;
+      state.login = action.payload;
+      state.success = "Login successfull.";
+    },
+    loginFail: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
     },
   },
 });
@@ -56,7 +71,9 @@ export const {
   verifyOtpSuccess,
   verifyOtpFail,
   googleSignupSuccess,
-  clearMessages,
+  loginRequest,
+  loginSuccess,
+  loginFail,
 } = authSlice.actions;
 
 export default authSlice.reducer;
@@ -66,7 +83,7 @@ export const signup = (userData) => async (dispatch) => {
   dispatch(signupRequest());
   try {
     const response = await axios.post(
-      `${baseURL}/api/v1/users/signup`,
+      `${baseURL}/api/v1/users/auth/signup`,
       userData
     );
     dispatch(signupSuccess(response.data));
@@ -79,7 +96,7 @@ export const signup = (userData) => async (dispatch) => {
 // OTP verification
 export const verifyOtp = (email, otp) => async (dispatch) => {
   try {
-    await axios.post(`${baseURL}/api/v1/users/verify-otp`, { email, otp });
+    await axios.post(`${baseURL}/api/v1/users/auth/verify-otp`, { email, otp });
     dispatch(verifyOtpSuccess());
   } catch (err) {
     dispatch(verifyOtpFail("Invalid or expired OTP."));
@@ -90,7 +107,7 @@ export const verifyOtp = (email, otp) => async (dispatch) => {
 export const googleSignup = (googleId) => async (dispatch) => {
   dispatch(signupRequest());
   try {
-    const response = await axios.post(`${baseURL}/api/v1/users/signup`, {
+    const response = await axios.post(`${baseURL}/api/v1/users/auth/signup`, {
       googleId: googleId,
     });
 
@@ -99,5 +116,20 @@ export const googleSignup = (googleId) => async (dispatch) => {
     const error =
       err.response?.data?.message || err.message || "Google signup failed";
     dispatch(signupFail(error));
+  }
+};
+
+// login
+export const login = (userData) => async (dispatch) => {
+  dispatch(loginRequest());
+  try {
+    const response = await axios.post(
+      `${baseURL}/api/v1/users/auth/login`,
+      userData
+    );
+    dispatch(loginSuccess(response.data));
+  } catch (err) {
+    const error = err.response?.data?.message || err.message || "login failed";
+    dispatch(loginFail(error));
   }
 };

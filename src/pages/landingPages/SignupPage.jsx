@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   signup,
   verifyOtp,
-  clearMessages,
   googleSignup,
 } from "../../slices/authSlice";
 import { FcGoogle } from "react-icons/fc";
@@ -36,10 +35,10 @@ const SignupPage = () => {
   const [step, setStep] = useState("form");
 
   useEffect(() => {
-    if (error || success) {
-      const timer = setTimeout(() => dispatch(clearMessages()), 3000);
-      return () => clearTimeout(timer);
-    }
+    // if (error || success) {
+    //   const timer = setTimeout(() => dispatch(clearMessages()), 3000);
+    //   return () => clearTimeout(timer);
+    // }
 
     if (isGoogleSignupVerified) navigate("/dashboard");
     if (isEmailSignupVerified) navigate("/login");

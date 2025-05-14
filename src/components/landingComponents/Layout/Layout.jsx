@@ -9,11 +9,11 @@ function Layout() {
   return (
     <div className={`bg-gray-200 px-3 min-h-screen  py-1}`}>
       <TitlesPages />
-      {locationPath != "/signup" && <Navbar />}
+      {locationPath != "/signup" && locationPath != "/login"  && <Navbar />}
       <main>
         <Outlet />
       </main>
-      {locationPath != "/signup" && <Footer />}
+      {locationPath != "/signup" && locationPath != "/login" && <Footer />}
     </div>
   );
 }
