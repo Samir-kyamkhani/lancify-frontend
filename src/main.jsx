@@ -34,12 +34,18 @@ import UserInvoicesPage from "./pages/clientDashboard/UserInvoicesPage";
 import UserInvoiceDetailsPage from "./pages/clientDashboard/detailedPage/UserInvoicesDetailedPage";
 import UserSharedFilesPage from "./pages/clientDashboard/UserSharedFilesPage";
 
-import Layout from "./components/landingComponents/Layout/Layout"
+import Layout from "./components/landingComponents/Layout/Layout";
 import HomePage from "./pages/landingPages/HomePage";
 import BlogsPage from "./pages/landingPages/BlogsPage";
 import ContactPage from "./pages/landingPages/ContactPage";
 import SignupPage from "./pages/landingPages/SignupPage";
 import LoginPage from "./pages/landingPages/LoginPage";
+import { Provider } from "react-redux";
+import { store } from "./app/store";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
+const client_id = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -69,7 +75,6 @@ const router = createBrowserRouter(
           element={<ProposalDetailsPage />}
         />
       </Route>
-      
       <Route path="/user" element={<DashboardLayout />}>
         <Route index element={<UserDashboardPage />} />
         <Route path="/user/projects" element={<UserProjectPage />} />
@@ -83,12 +88,25 @@ const router = createBrowserRouter(
         <Route path="/user/payment/:id" element={<UserInvoiceDetailsPage />} />
         <Route path="/user/files" element={<UserSharedFilesPage />} />
       </Route>
-
-      <Route path="/" element={<Layout />}>
+      <Route
+        path="/"
+        element={
+          <Provider store={store}>
+            <Layout />
+          </Provider>
+        }
+      >
         <Route index={true} element={<HomePage />} />
         <Route path="/blogs" element={<BlogsPage />} />
         <Route path="/contact" element={<ContactPage />} />
-        <Route path="/signup" element={<SignupPage />} />
+        <Route
+          path="/signup"
+          element={
+            <GoogleOAuthProvider clientId={client_id}>
+              <SignupPage />
+            </GoogleOAuthProvider>
+          }
+        />
         <Route path="/login" element={<LoginPage />} />
       </Route>
       ,

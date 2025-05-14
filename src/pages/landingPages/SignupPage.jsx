@@ -1,17 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signup,
+  verifyOtp,
+  clearMessages,
+  googleSignup,
+} from "../../slices/authSlice";
 import { FcGoogle } from "react-icons/fc";
+import { useNavigate } from "react-router-dom";
+import { useGoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
 const SignupPage = () => {
+  const dispatch = useDispatch();
+  const { isLoading, error, success, otpVerified } = useSelector(
+    (state) => state.auth
+  );
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
     profession: "",
     email: "",
-    phone: "",
+    mobileNumber: "",
     password: "",
     otp: "",
   });
 
   const [step, setStep] = useState("form");
+
+  useEffect(() => {
+    if (success || error) {
+      const timer = setTimeout(() => dispatch(clearMessages()), 3000);
+      return () => clearTimeout(timer);
+    }
+    if (otpVerified) {
+      navigate("/login");
+    }
+  }, [success, error, dispatch, otpVerified, navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,20 +45,54 @@ const SignupPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.email && !formData.phone) {
+    if (!formData.email && !formData.mobileNumber) {
       alert("Please enter either email or phone number.");
       return;
     }
-    setStep("otp");
+    dispatch(signup(formData)).then(() => setStep("otp"));
   };
 
   const handleOTPSubmit = (e) => {
     e.preventDefault();
-    alert("OTP Verified. Account created!");
+    dispatch(verifyOtp(formData.email, formData.otp));
   };
 
-  const handleGoogleLogin = () => {
-    alert("Google login clicked (mock)");
+  const googleLogin = useGoogleLogin({
+    flow: "popup", // Use the popup flow to avoid window interaction issues
+    scope: "openid profile email", // Ensure the right scopes for ID token
+    onSuccess: async (tokenResponse) => {
+      console.log("tokenResponse", tokenResponse);
+
+      try {
+        // Check if ID token exists
+        const idToken = tokenResponse?.id_token;
+        if (!idToken) {
+          throw new Error("No ID token received.");
+        }
+
+        // Decode the ID token
+        const decoded = jwtDecode(idToken);
+        console.log("decoded", decoded);
+
+        // Proceed with the signup logic
+        dispatch(
+          googleSignup({
+            googleId: idToken,
+            name: decoded.name,
+            profession: "", // Optional field
+          })
+        );
+      } catch (err) {
+        console.error("Google login error:", err.message || err);
+      }
+    },
+    onError: (error) => {
+      console.error("Google login error:", error);
+    },
+  });
+
+  const handleGoogleSignup = () => {
+    googleLogin();
   };
 
   return (
@@ -42,12 +102,21 @@ const SignupPage = () => {
           Sign Up
         </h2>
 
+        {error && (
+          <div className="text-red-600 text-sm text-center mb-2">{error}</div>
+        )}
+        {success && (
+          <div className="text-green-600 text-sm text-center mb-2">
+            {success}
+          </div>
+        )}
+
         {step === "form" ? (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="sm:grid sm:grid-cols-2 sm:gap-3 space-y-4 sm:space-y-0">
               <input
                 type="text"
-                name="fullName"
+                name="name"
                 placeholder="Full Name"
                 onChange={handleChange}
                 required
@@ -66,30 +135,12 @@ const SignupPage = () => {
                   <option value="UI/UX Designer">UI/UX Designer</option>
                   <option value="Data Scientist">Data Scientist</option>
                 </optgroup>
-                <optgroup label="Healthcare">
-                  <option value="Doctor">Doctor</option>
-                  <option value="Nurse">Nurse</option>
-                  <option value="Pharmacist">Pharmacist</option>
-                </optgroup>
-                <optgroup label="Education">
-                  <option value="Teacher">Teacher</option>
-                  <option value="Professor">Professor</option>
-                  <option value="Librarian">Librarian</option>
-                </optgroup>
-                <optgroup label="Business">
-                  <option value="Accountant">Accountant</option>
-                  <option value="Manager">Manager</option>
-                  <option value="HR Specialist">HR Specialist</option>
-                </optgroup>
-                <optgroup label="Freelance">
-                  <option value="Freelancer">Freelancer</option>
-                </optgroup>
               </select>
             </div>
 
             <input
               type="tel"
-              name="phone"
+              name="mobileNumber"
               placeholder="Phone Number"
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded text-sm"
@@ -121,7 +172,7 @@ const SignupPage = () => {
 
             <button
               type="button"
-              onClick={handleGoogleLogin}
+              onClick={handleGoogleSignup}
               className="w-full border border-gray-200 hover:bg-black/5 bg-white py-2.5 px-4 rounded flex justify-center items-center gap-3 transition"
             >
               <FcGoogle fontSize={24} /> Continue with Google
