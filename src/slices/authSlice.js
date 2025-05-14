@@ -63,7 +63,10 @@ export default authSlice.reducer;
 export const signup = (userData) => async (dispatch) => {
   dispatch(signupRequest());
   try {
-    const response = await axios.post(`${baseURL}/api/v1/users/signup`, userData);
+    const response = await axios.post(
+      `${baseURL}/api/v1/users/signup`,
+      userData
+    );
     dispatch(signupSuccess(response.data));
   } catch (err) {
     const error = err.response?.data?.message || err.message || "Signup failed";
@@ -82,18 +85,17 @@ export const verifyOtp = (email, otp) => async (dispatch) => {
 };
 
 // Google signup using ID token
-export const googleSignup = ({ googleId, name }) => async (dispatch) => {
-  console.log(googleId, name);
-  
+export const googleSignup = (googleId) => async (dispatch) => {
   dispatch(signupRequest());
   try {
     const response = await axios.post(`${baseURL}/api/v1/users/signup`, {
-      googleId,
-      name,
+      googleId: googleId,
     });
+
     dispatch(googleSignupSuccess(response.data));
   } catch (err) {
-    const error = err.response?.data?.message || err.message || "Google signup failed";
+    const error =
+      err.response?.data?.message || err.message || "Google signup failed";
     dispatch(signupFail(error));
   }
 };
