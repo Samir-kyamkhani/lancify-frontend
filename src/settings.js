@@ -20,9 +20,8 @@ export const getCurrentUser = () => {
 };
 
 export const getUserRole = () => {
-  // const user = getCurrentUser();
-  // return user?.data?.user?.role || null;
-  return "admin";
+  const user = getCurrentUser();
+  return user?.data?.user?.role || null;
 };
 
 export const isAuthenticated = () => {
