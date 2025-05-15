@@ -12,8 +12,8 @@ const SignupPage = () => {
   const navigate = useNavigate();
 
   // Only grab what we actually use from the auth slice
-  const { isLoading, success } = useSelector((state) => state.auth);
-  const user = useSelector((state) => state?.auth?.user?.data?.user);
+  const { isLoading, success, user:userData } = useSelector((state) => state.auth);
+  const user = userData?.data?.user;
 
   const [formData, setFormData] = useState({
     name: "",
