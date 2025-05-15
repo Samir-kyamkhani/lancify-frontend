@@ -13,8 +13,7 @@ const SignupPage = () => {
 
   // Only grab what we actually use from the auth slice
   const { isLoading, success } = useSelector((state) => state.auth);
-
-  const localUser = JSON.parse(localStorage.getItem("user"))?.data?.user;
+  const user = useSelector((state) => state?.auth?.user?.data?.user);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -26,9 +25,9 @@ const SignupPage = () => {
   });
 
   useEffect(() => {
-    if (localUser?.isGoogleSignUp) navigate("/dashboard");
+    if (user?.isGoogleSignUp) navigate("/dashboard");
     if (success === "OTP Verified. Account created!") navigate("/login");
-  }, [localUser?.isGoogleSignUp, success, navigate]);
+  }, [user?.isGoogleSignUp, success, navigate]);
 
   const handleChange = ({ target: { name, value } }) =>
     setFormData((prev) => ({ ...prev, [name]: value }));

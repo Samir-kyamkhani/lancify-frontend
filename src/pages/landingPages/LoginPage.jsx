@@ -4,13 +4,13 @@ import { IoIosArrowBack } from "react-icons/io";
 import { Link, useNavigate } from "react-router-dom";
 import AutoClearMessage from "../../components/AutoClearMessage";
 import { useGoogleLogin } from "@react-oauth/google";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { googleLogin, login } from "../../slices/authSlice";
 
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const localUser = JSON.parse(localStorage.getItem("user"))?.data?.user;
+  const user = useSelector((state) => state?.auth?.user?.data?.user);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -22,13 +22,10 @@ const LoginPage = () => {
   };
 
   useEffect(() => {
-    if (
-      localUser?.isEmailVerified === true ||
-      localUser?.isGoogleSignUp === true
-    ) {
+    if (user?.isEmailVerified === true || user?.isGoogleSignUp === true) {
       navigate("/dashboard");
     }
-  }, [localUser?.isEmailVerified, localUser?.isGoogleSignUp, navigate]);
+  }, [user?.isEmailVerified, user?.isGoogleSignUp, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

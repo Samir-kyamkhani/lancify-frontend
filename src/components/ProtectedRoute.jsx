@@ -14,7 +14,7 @@ export default function ProtectedRoute() {
   const allowedRoles = matchedPath ? routeAccessMap[matchedPath] : [];
 
   // Check if the user is authenticated
-  if (!isAuthenticated()) return <Navigate to="/signup" replace />;
+  if (!isAuthenticated()) return <Navigate to="/login" replace />;
 
   // Check if the user has access to the requested route based on their role
   if (!allowedRoles.includes(role)) {
