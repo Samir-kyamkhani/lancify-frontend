@@ -5,12 +5,15 @@ import AddTaskModal from "../../components/dashboard/Form/AddTaskModal";
 import { initialColumns } from "../../index";
 import TaskColumn from "../../components/dashboard/TaskColumn";
 import { BsPlus } from "react-icons/bs";
+import { getUserRole } from "../../settings";
+import UserProjectPage from "../clientDashboard/UserProjectPage";
 
 export default function ProjectPage() {
   const [columns, setColumns] = useState(initialColumns);
   const [showModal, setShowModal] = useState(false);
   const [currentColumn, setCurrentColumn] = useState("Todo");
 
+  const role = getUserRole();
   const handleAddClick = (columnTitle = "Todo") => {
     setCurrentColumn(columnTitle);
     setShowModal(true);
@@ -28,34 +31,45 @@ export default function ProjectPage() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      <HeaderSection />
-      <ProjectOverview />
+      {role === "admin" && (
+        <>
+          <HeaderSection />
+          <ProjectOverview />
 
-      <div className="bg-white py-6 px-4 rounded-lg shadow overflow-x-auto">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Task Board</h2>
-          <button
-            onClick={() => handleAddClick("Todo")}
-            className="flex items-center gap-2 w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-          >
-            <BsPlus /> Add Task
-          </button>
-        </div>
+          <div className="bg-white py-6 px-4 rounded-lg shadow overflow-x-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">
+                Task Board
+              </h2>
+              <button
+                onClick={() => handleAddClick("Todo")}
+                className="flex items-center gap-2 w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+              >
+                <BsPlus /> Add Task
+              </button>
+            </div>
 
-        <div className="flex gap-6 min-w-full sm:gap-10">
-          {columns.map((col, idx) => (
-            <TaskColumn key={idx} {...col} onAddTask={() => handleAddClick(col.title)} />
-          ))}
-        </div>
-      </div>
+            <div className="flex gap-6 min-w-full sm:gap-10">
+              {columns.map((col, idx) => (
+                <TaskColumn
+                  key={idx}
+                  {...col}
+                  onAddTask={() => handleAddClick(col.title)}
+                />
+              ))}
+            </div>
+          </div>
 
-      {showModal && (
-        <AddTaskModal
-          defaultStatus={currentColumn}
-          onSubmit={handleAddTask}
-          onClose={() => setShowModal(false)}
-        />
+          {showModal && (
+            <AddTaskModal
+              defaultStatus={currentColumn}
+              onSubmit={handleAddTask}
+              onClose={() => setShowModal(false)}
+            />
+          )}
+        </>
       )}
+      {role === "user" && <UserProjectPage />}
     </div>
   );
 }

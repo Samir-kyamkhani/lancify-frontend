@@ -3,9 +3,11 @@ import { FiStar } from "react-icons/fi";
 import { IoArrowBack } from "react-icons/io5";
 import NotificationSettings from "../../components/dashboard/NotificationSettings";
 import { messages } from "../../index";
-
+import { getUserRole } from "../../settings";
 
 export default function InboxPage() {
+  const role = getUserRole();
+
   const [selectedId, setSelectedId] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -86,9 +88,7 @@ export default function InboxPage() {
                   <p className="text-sm text-gray-400">
                     Sent: {selectedMsg.time}
                   </p>
-                  <p className="mt-4 text-gray-700">
-                    {selectedMsg.preview}
-                  </p>
+                  <p className="mt-4 text-gray-700">{selectedMsg.preview}</p>
                   <div className="mt-4 flex gap-4">
                     <button className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
                       Reply
@@ -106,9 +106,11 @@ export default function InboxPage() {
         </main>
       </div>
 
-      <section className="py-4">
-        <NotificationSettings />
-      </section>
+      {role === "admin" && (
+        <section className="py-4">
+          <NotificationSettings />
+        </section>
+      )}
     </>
   );
 }

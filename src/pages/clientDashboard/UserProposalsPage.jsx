@@ -5,14 +5,11 @@ import { statusColors, Userproposals } from "../..";
 
 const UserProposalsPage = () => {
   return (
-    <div className="p-6  -m-4 ">
-      <h2 className="text-2xl font-bold text-black mb-1">My Proposals</h2>
-      <p className="text-gray-600 mb-4">Review proposals submitted to you.</p>
-      <hr className="mb-10 text-gray-200" />
-
+    <div>
+    
       <div className="bg-white shadow rounded-xl overflow-x-auto">
         <table className="min-w-full text-sm text-black">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
             <tr>
               {["Project Name", "Status", "Date Submitted", "Amount", ""].map(
                 (title) => (
@@ -50,7 +47,7 @@ const UserProposalsPage = () => {
                 </td>
                 <td className="sm:py-3 sm:px-4 py-1.5 px-2 text-xs lg:text-sm">
                   <Link
-                    to={`/user/proposal/${proposal.id}`}
+                    to={`/dashboard/proposal/${proposal.id}`}
                     className="border w-fit border-gray-300 hover:bg-gray-100 text-xs px-3 py-1.5 rounded-md flex items-center gap-1"
                   >
                     <svg
