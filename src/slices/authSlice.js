@@ -131,7 +131,7 @@ export const verifyOtp = (email, otp) => async (dispatch, getState) => {
       localStorage.setItem("user", JSON.stringify(auth.user));
     }
   } catch (err) {
-    dispatch(verifyOtpFail("Invalid or expired OTP."));
+    dispatch(verifyOtpFail(handleError(err)));
   }
 };
 

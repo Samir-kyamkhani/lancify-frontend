@@ -4,7 +4,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { Link, useNavigate } from "react-router-dom";
 import AutoClearMessage from "../../components/AutoClearMessage";
 import { useGoogleLogin } from "@react-oauth/google";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { googleLogin, login } from "../../slices/authSlice";
 
 const LoginPage = () => {
@@ -28,7 +28,7 @@ const LoginPage = () => {
     ) {
       navigate("/dashboard");
     }
-  }, [isEmailVerified, isGoogleSignUp, navigate]);
+  }, [localUser?.isEmailVerified, localUser?.isGoogleSignUp, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
