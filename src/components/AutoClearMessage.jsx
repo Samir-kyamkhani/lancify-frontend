@@ -8,12 +8,21 @@ const AutoClearMessage = ({ duration = 5000 }) => {
   const { error, success } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (error || (success && success !== "Please verify OTP.")) {
-      const timer = setTimeout(() => {
-        dispatch(clearMessages());
-      }, duration);
-      return () => clearTimeout(timer);
+    const allowedSuccessMessages = [
+      "OTP sent to your email.",
+      "OTP has been sent to your email.",
+      "OTP resent successfully.",
+    ];
+
+    if (!error && (!success || allowedSuccessMessages.includes(success))) {
+      return;
     }
+
+    const timer = setTimeout(() => {
+      dispatch(clearMessages());
+    }, duration);
+
+    return () => clearTimeout(timer);
   }, [error, success, dispatch, duration]);
 
   const variants = {

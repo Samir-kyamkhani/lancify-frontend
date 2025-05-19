@@ -21,10 +21,10 @@ export const getCurrentUser = () => {
 
 export const getUserRole = () => {
   const user = getCurrentUser();
-  return user?.data?.user?.role || null;
+  return user?.role || null;
 };
 
 export const isAuthenticated = () => {
   const user = getCurrentUser();
-  return !!user?.data?.user;
+  return !!user;
 };

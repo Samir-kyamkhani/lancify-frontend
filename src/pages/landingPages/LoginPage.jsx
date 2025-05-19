@@ -1,77 +1,72 @@
 import { useState, useEffect } from "react";
-import { FcGoogle } from "react-icons/fc";
-import { IoIosArrowBack } from "react-icons/io";
 import { Link, useNavigate } from "react-router-dom";
-import AutoClearMessage from "../../components/AutoClearMessage";
-import { useGoogleLogin } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 import { useDispatch, useSelector } from "react-redux";
-import { googleLogin, login } from "../../slices/authSlice";
+import { login, googleLogin } from "../../slices/authSlice";
+import AutoClearMessage from "../../components/AutoClearMessage";
+import { IoIosArrowBack } from "react-icons/io";
+import AuthSidebar from "../../components/landingComponents/AuthSidebar";
+import { motion } from "framer-motion";
 
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state?.auth?.user?.data?.user);
+  const { user } = useSelector((state) => state.auth);
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const [formData, setFormData] = useState({ email: "", password: "" });
 
   useEffect(() => {
-    if (user?.isEmailVerified === true || user?.isGoogleSignUp === true) {
+    if (user?.isEmailVerified || user?.isGoogleSignUp) {
       navigate("/dashboard");
     }
-  }, [user?.isEmailVerified, user?.isGoogleSignUp, navigate]);
+  }, [user, navigate]);
+
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!formData.email || !formData.password) {
-      alert("Please enter both email and password.");
-      return;
-    }
-
-    dispatch(login(formData)).then((res) => {
-      const user = res?.payload?.data?.user;
-      if (user) {
-        navigate("/dashboard");
-      }
-    });
+    if (!formData.email || !formData.password)
+      return alert("Please fill in all fields");
+    dispatch(login(formData));
   };
 
-  const handleGoogleLogin = useGoogleLogin({
-    onSuccess: ({ access_token }) => dispatch(googleLogin(access_token)),
-    onError: (err) => console.error("Google login error:", err),
-  });
+  const handleGoogleLoginSuccess = ({ credential }) => {
+    if (credential) dispatch(googleLogin(credential));
+  };
+
+  const handleGoogleLoginError = () => {
+    alert("Google login failed. Please try again.");
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-md">
-        <div className="relative">
-          <Link
-            to="/"
-            className="absolute cursor-pointer bg-blue-100 sm:top-1 p-2 rounded-lg left-0"
-          >
-            <IoIosArrowBack />
-          </Link>
-          <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-900 mb-6">
-            Login
-          </h2>
-        </div>
+    <div className="flex flex-col justify-center items-center space-y-8 lg:flex-row lg:justify-evenly p-8 py-16">
+      <AuthSidebar />
+
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="relative w-full max-w-md bg-[#FFFFFF] rounded-3xl shadow-2xl px-8 py-10"
+      >
+
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-1">
+          Welcome Back
+        </h2>
+        <p className="text-center text-gray-500 mb-6 text-sm">
+          Log in to manage your workflow like a pro.
+        </p>
+
         <AutoClearMessage />
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
             name="email"
-            placeholder="Email or Number"
+            placeholder="Email Address"
             onChange={handleChange}
             value={formData.email}
-            required
-            className="w-full p-2 border border-gray-300 rounded text-sm"
+            className="w-full px-4 py-3 rounded-xl bg-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
             type="password"
@@ -79,30 +74,37 @@ const LoginPage = () => {
             placeholder="Password"
             onChange={handleChange}
             value={formData.password}
-            required
-            className="w-full p-2 border border-gray-300 rounded text-sm"
+            className="w-full px-4 py-3 rounded-xl bg-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2.5 px-4 rounded hover:bg-blue-700 transition"
+            className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition"
           >
             Login
           </button>
-          <button
-            type="button"
-            onClick={() => handleGoogleLogin()}
-            className="w-full border border-gray-200 hover:bg-black/5 bg-white py-2.5 px-4 rounded flex justify-center items-center gap-x-1 sm:gap-3 transition cursor-pointer"
-          >
-            Continue with Google <FcGoogle className="size-5 sm:size-6" />
-          </button>
-          <p className="text-center text-sm text-gray-700">
-            Don't have an account?{" "}
-            <Link to="/signup" className="text-blue-600 hover:underline">
-              Sign Up
-            </Link>
-          </p>
         </form>
-      </div>
+
+        <div className="my-4 text-center text-gray-400 text-sm">OR</div>
+
+        <div className="flex justify-center">
+          <GoogleLogin
+            onSuccess={handleGoogleLoginSuccess}
+            onError={handleGoogleLoginError}
+            useOneTap
+            shape="pill"
+            text="continue_with"
+            width="100%"
+          />
+        </div>
+
+        <p className="text-center text-sm text-gray-500 mt-6">
+          Don’t have an account?{" "}
+          <Link to="/signup" className="text-blue-600 font-medium hover:underline">
+            Sign up
+          </Link>
+        </p>
+      </motion.div>
     </div>
   );
 };

@@ -7,13 +7,15 @@ import TitlesPages from "../TitlesPages";
 function Layout() {
   const locationPath = useLocation().pathname;
   return (
-    <div className={`bg-gray-200 px-3 min-h-screen  py-1}`}>
+    <div className={`bg-[#FFFFFF] px-3 min-h-screen  py-1}`}>
       <TitlesPages />
-      {locationPath != "/signup" && locationPath != "/login"  && <Navbar />}
+      {/* {locationPath != "/signup" && locationPath != "/login"  && <Navbar />} */}
+      <Navbar />
       <main>
         <Outlet />
       </main>
-      {locationPath != "/signup" && locationPath != "/login" && <Footer />}
+      {/* {locationPath != "/signup" && locationPath != "/login" && <Footer />} */}
+      <Footer />
     </div>
   );
 }
