@@ -111,7 +111,9 @@ const SignupPage = () => {
             </p>
           )}
 
-          <AutoClearMessage />
+          <div className="mt-5">
+            <AutoClearMessage />
+          </div>
 
           <form
             onSubmit={isOtpStep ? handleOTPSubmit : handleSubmit}
@@ -184,32 +186,34 @@ const SignupPage = () => {
 
             {isOtpStep && (
               <>
-                <input
-                  type="text"
-                  name="otp"
-                  placeholder="Enter OTP"
-                  value={formData.otp}
-                  onChange={handleChange}
-                  required
-                  disabled={isLoading}
-                  className="bg-gray-100 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <div className="text-center text-sm">
-                  Didn't receive the OTP?{" "}
-                  <button
-                    type="button"
-                    onClick={handleResendOtp}
-                    disabled={resendCooldown > 0 || isLoading}
-                    className={`font-medium hover:underline text-blue-600 ${
-                      resendCooldown > 0
-                        ? "text-gray-400 cursor-not-allowed"
-                        : "cursor-pointer"
-                    }`}
-                  >
-                    {resendCooldown > 0
-                      ? `Resend in ${resendCooldown}s`
-                      : "Resend OTP"}
-                  </button>
+                <div className="min-w-[20rem]">
+                  <input
+                    type="text"
+                    name="otp"
+                    placeholder="Enter OTP"
+                    value={formData.otp}
+                    onChange={handleChange}
+                    required
+                    disabled={isLoading}
+                    className="bg-gray-100 w-full rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <div className="text-center text-sm mt-2">
+                    Didn't receive the OTP?{" "}
+                    <button
+                      type="button"
+                      onClick={handleResendOtp}
+                      disabled={resendCooldown > 0 || isLoading}
+                      className={`font-medium hover:underline text-blue-600 ${
+                        resendCooldown > 0
+                          ? "text-gray-400 cursor-not-allowed"
+                          : "cursor-pointer"
+                      }`}
+                    >
+                      {resendCooldown > 0
+                        ? `Resend in ${resendCooldown}s`
+                        : "Resend OTP"}
+                    </button>
+                  </div>
                 </div>
               </>
             )}
