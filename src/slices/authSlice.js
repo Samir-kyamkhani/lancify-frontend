@@ -2,6 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { baseURL } from "../baseURL";
 
+// ✅ Axios global config (Optional but recommended)
+axios.defaults.withCredentials = true;
+
 // Initial state from localStorage
 const initialUser = JSON.parse(localStorage.getItem("user") || "null");
 
@@ -69,7 +72,9 @@ const handleError = (err) =>
 export const signup = (userData) => async (dispatch) => {
   dispatch(authRequest());
   try {
-    const { data } = await axios.post(`${baseURL}/signup`, userData);
+    const { data } = await axios.post(`${baseURL}/signup`, userData, {
+      withCredentials: true,
+    });
     if (data?.data?.user) {
       dispatch(authSuccess(data.data.user));
       localStorage.setItem("user", JSON.stringify(data.data.user));
@@ -84,7 +89,9 @@ export const signup = (userData) => async (dispatch) => {
 export const login = (credentials) => async (dispatch) => {
   dispatch(authRequest());
   try {
-    const { data } = await axios.post(`${baseURL}/login`, credentials);
+    const { data } = await axios.post(`${baseURL}/login`, credentials, {
+      withCredentials: true,
+    });
     dispatch(authSuccess(data.data.user));
     localStorage.setItem("user", JSON.stringify(data.data.user));
   } catch (err) {
@@ -95,9 +102,11 @@ export const login = (credentials) => async (dispatch) => {
 export const googleSignup = (googleIdToken) => async (dispatch) => {
   dispatch(authRequest());
   try {
-    const { data } = await axios.post(`${baseURL}/signup`, {
-      googleIdToken,
-    });
+    const { data } = await axios.post(
+      `${baseURL}/signup`,
+      { googleIdToken },
+      { withCredentials: true }
+    );
     dispatch(authSuccess(data.data.user));
     localStorage.setItem("user", JSON.stringify(data.data.user));
   } catch (err) {
@@ -108,9 +117,11 @@ export const googleSignup = (googleIdToken) => async (dispatch) => {
 export const googleLogin = (googleIdToken) => async (dispatch) => {
   dispatch(authRequest());
   try {
-    const { data } = await axios.post(`${baseURL}/login`, {
-      googleId: googleIdToken,
-    });
+    const { data } = await axios.post(
+      `${baseURL}/login`,
+      { googleId: googleIdToken },
+      { withCredentials: true }
+    );
     dispatch(authSuccess(data.data.user));
     localStorage.setItem("user", JSON.stringify(data.data.user));
   } catch (err) {
@@ -131,7 +142,9 @@ export const forgotPassword =
         body.newPassword = newPassword;
       }
 
-      const { data } = await axios.post(`${baseURL}${endpoint}`, body);
+      const { data } = await axios.post(`${baseURL}${endpoint}`, body, {
+        withCredentials: true,
+      });
 
       dispatch(messageOnlySuccess(data.message));
       return { success: true, message: data.message };
@@ -145,7 +158,11 @@ export const forgotPassword =
 export const resendOtp = (email) => async (dispatch) => {
   dispatch(authRequest());
   try {
-    const { data } = await axios.post(`${baseURL}/resend-otp`, { email });
+    const { data } = await axios.post(
+      `${baseURL}/resend-otp`,
+      { email },
+      { withCredentials: true }
+    );
     dispatch(messageOnlySuccess(data.message));
   } catch (err) {
     dispatch(authFail(handleError(err)));
@@ -153,7 +170,7 @@ export const resendOtp = (email) => async (dispatch) => {
 };
 
 export const resetPassword =
-  (currentPassword, newPassword) => async (dispatch, getState) => {
+  (currentPassword, newPassword) => async (dispatch) => {
     dispatch(authRequest());
     try {
       const { data } = await axios.post(

@@ -6,13 +6,13 @@ function BtnField({ btnName, onClose }) {
       <button
         type="button"
         onClick={onClose}
-        className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+        className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition cursor-pointer"
       >
         Cancel
       </button>
       <button
         type="submit"
-        className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+        className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition cursor-pointer"
       >
         {btnName}
       </button>

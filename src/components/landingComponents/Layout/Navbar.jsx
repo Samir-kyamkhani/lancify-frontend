@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { BiMenuAltRight } from "react-icons/bi";
-import { CgClose } from "react-icons/cg";
+import { CgClose, CgProfile } from "react-icons/cg";
 import { navItems } from "../../../index";
+import { useSelector } from "react-redux";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,6 +23,8 @@ function Navbar() {
     setIsOpen(false);
     document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const { user } = useSelector((state) => state?.auth);
 
   return (
     <header
@@ -42,7 +45,11 @@ function Navbar() {
       </div>
 
       {/* Desktop Navigation */}
-      <nav className="hidden lg:flex items-center space-x-16">
+      <nav
+        className={`hidden lg:flex items-center  ${
+          user ? "space-x-6" : "space-x-16"
+        }`}
+      >
         <ul className="flex space-x-2">
           {navItems.map((item, i) => (
             <li
@@ -67,19 +74,35 @@ function Navbar() {
             </li>
           ))}
         </ul>
-        <div className="space-x-4">
-          <Link
-            to="/signup"
-            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-semibold shadow-md transition duration-300"
-          >
-            Sign Up
-          </Link>
-          <Link
-            to="/login"
-            className="bg-white/70 border border-gray-300 text-black py-2 px-4 rounded-lg font-semibold shadow-md transition duration-300"
-          >
-            Login
-          </Link>
+        <div className="flex items-center">
+          {user ? (
+            <Link to={'/dashboard'}>
+              {user.avatarUrl ? (
+                <img
+                  src={user.avatarUrl}
+                  alt={user.name || "User Avatar"}
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+              ) : (
+                <CgProfile className="w-8 h-8 text-gray-600" />
+              )}
+            </Link>
+          ) : (
+            <div className="space-x-4">
+              <Link
+                to="/signup"
+                className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-semibold shadow-md transition duration-300"
+              >
+                Sign Up
+              </Link>
+              <Link
+                to="/login"
+                className="bg-white/70 border border-gray-300 text-black py-2 px-4 rounded-lg font-semibold shadow-md transition duration-300"
+              >
+                Login
+              </Link>
+            </div>
+          )}
         </div>
       </nav>
 

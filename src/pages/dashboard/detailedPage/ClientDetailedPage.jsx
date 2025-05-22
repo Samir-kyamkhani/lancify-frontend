@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaEdit,
   FaTrash,
@@ -12,19 +12,27 @@ import {
 import { useParams } from "react-router-dom";
 import { clients } from "../../../index.js";
 import ScheduleMeetingModal from "../../../components/dashboard/Form/ScheduleMeetingModal.jsx";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchSingleClient } from "../../../slices/clientSlice.js";
 
 export default function ClientDetailedPage() {
   const { id } = useParams();
-  const client = clients.find((client) => client.id === Number(id));
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchSingleClient(id));
+  }, []);
+
+  const { client } = useSelector((state) => state.clientData);
 
   const [note, setNote] = useState("");
   const [notes, setNotes] = useState([
     "Initial contact made. Interested in website redesign. Follow-up scheduled.",
   ]);
 
-  const [files, setFiles] = useState([
-    { name: "Initial Brief.pdf", date: "7/10/2024" },
-  ]);
+  // const [files, setFiles] = useState([
+  //   { name: "Initial Brief.pdf", date: "7/10/2024" },
+  // ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -53,9 +61,9 @@ export default function ClientDetailedPage() {
     }
   };
 
-  const handleDeleteFile = (index) => {
-    setFiles(files.filter((_, i) => i !== index));
-  };
+  // const handleDeleteFile = (index) => {
+  //   setFiles(files.filter((_, i) => i !== index));
+  // };
 
   return (
     <div className="bg-white -m-4 text-black min-h-screen p-6">
@@ -97,12 +105,12 @@ export default function ClientDetailedPage() {
               <FaMapMarkerAlt /> {client.country}
             </div>
             <div className="flex gap-2 pt-3 flex-wrap">
-              {client.tags?.map((tag, i) => (
+              {client.tags.map((tag, i) => (
                 <span
                   key={i}
                   className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded"
                 >
-                  {tag}
+                  {tag.name}
                 </span>
               ))}
             </div>
@@ -142,7 +150,7 @@ export default function ClientDetailedPage() {
         </section>
 
         {/* Files */}
-        <section className="bg-gray-50 p-5 rounded-xl shadow border border-gray-200">
+        {/* <section className="bg-gray-50 p-5 rounded-xl shadow border border-gray-200">
           <h2 className="text-lg font-semibold mb-3">Files</h2>
           <div className="space-y-2 text-sm text-gray-700 mb-4">
             {files.map((file, i) => (
@@ -167,10 +175,10 @@ export default function ClientDetailedPage() {
             <FaUpload /> Upload File
             <input type="file" onChange={handleFileUpload} className="hidden" />
           </label>
-        </section>
+        </section> */}
 
         {/* Meeting History */}
-        <section className="bg-gray-50 p-5 rounded-xl shadow border border-gray-200 md:col-span-2">
+        <section className="bg-gray-50 p-5 rounded-xl shadow border border-gray-200 md:col-span-2 w-full">
           <div className="flex justify-between items-center mb-3">
             <h2 className="text-lg font-semibold">Meeting History</h2>
             <button

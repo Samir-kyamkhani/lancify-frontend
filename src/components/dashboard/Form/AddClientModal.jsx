@@ -1,16 +1,26 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
 import InputField from "../../Ui/InputField";
 import SelectField from "../../Ui/SelectField";
 import BtnField from "../../Ui/BtnField";
+import { motion } from "framer-motion";
+import { addClient, editClient } from "../../../slices/clientSlice";
+import AutoClearMessage from "../../AutoClearMessage";
 
-export default function AddClientModal({ onSubmit, onClose, isEdit = false, clientData = {} }) {
+export default function AddClientModal({
+  onClose,
+  isEdit = false,
+  clientData = {},
+}) {
+  const dispatch = useDispatch();
+
   const [form, setForm] = useState({
     name: clientData.name || "",
     email: clientData.email || "",
-    number: clientData.number || "",
+    phone: clientData.phone || "",
     status: clientData.status || "Lead",
     country: clientData.country || "",
-    tags: clientData.tags?.join(", ") || "",
+    tags: clientData.tags?.map((tag) => tag.name).join(", ") || "",
   });
 
   const handleChange = (e) => {
@@ -18,13 +28,33 @@ export default function AddClientModal({ onSubmit, onClose, isEdit = false, clie
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const formattedData = {
+    const payload = {
       ...form,
-      tags: form.tags.split(",").map((tag) => tag.trim()),
+      tags: form.tags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean),
     };
-    onSubmit(formattedData);
+
+    await dispatch(addClient(payload));
+    onClose();
+  };
+
+  const editHandleSubmit = async (e) => {
+    e.preventDefault();
+    const payload = {
+      id: clientData.id,
+      ...form,
+      tags: form.tags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean),
+    };
+
+    await dispatch(editClient(payload));
+    onClose();
   };
 
   return (
@@ -38,8 +68,12 @@ export default function AddClientModal({ onSubmit, onClose, isEdit = false, clie
             ? "Update the details of the client."
             : "Enter the details for the new client. Fields marked with * are required."}
         </p>
+        <AutoClearMessage />
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form
+          onSubmit={isEdit ? editHandleSubmit : handleSubmit}
+          className="space-y-5"
+        >
           <InputField
             label="Name"
             name="name"
@@ -50,12 +84,12 @@ export default function AddClientModal({ onSubmit, onClose, isEdit = false, clie
           />
 
           <InputField
-            label="Number"
-            name="number"
-            value={form.number}
+            label="Phone"
+            name="phone"
+            value={form.phone}
             onChange={handleChange}
             required
-            placeholder="+91 8086947050"
+            placeholder="Phone Number"
           />
 
           <InputField
@@ -76,7 +110,7 @@ export default function AddClientModal({ onSubmit, onClose, isEdit = false, clie
               { value: "Lead", label: "Lead" },
               { value: "Completed", label: "Completed" },
               { value: "Active", label: "Active" },
-              { value: "On Hold", label: "On Hold" },
+              { value: "OnHold", label: "On Hold" },
             ]}
           />
 
@@ -96,7 +130,10 @@ export default function AddClientModal({ onSubmit, onClose, isEdit = false, clie
             placeholder="Enterprise, Web Dev (comma-separated)"
           />
 
-          <BtnField onClose={onClose} btnName={isEdit ? "Update Client" : "Add Client"} />
+          <BtnField
+            onClose={onClose}
+            btnName={isEdit ? "Update Client" : "Add Client"}
+          />
         </form>
       </div>
     </div>

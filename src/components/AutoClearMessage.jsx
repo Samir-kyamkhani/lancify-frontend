@@ -5,7 +5,15 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const AutoClearMessage = ({ duration = 5000 }) => {
   const dispatch = useDispatch();
-  const { error, success } = useSelector((state) => state.auth);
+  const { auth, clientData } = useSelector((state) => ({
+    auth: state.auth,
+    clientData: state.clientData,
+  }));
+
+  const authError = auth.error;
+  const authSuccess = auth.success;
+  const clientError = clientData.error;
+  const clientSuccess = clientData.success;
 
   useEffect(() => {
     const allowedSuccessMessages = [
@@ -14,7 +22,10 @@ const AutoClearMessage = ({ duration = 5000 }) => {
       "OTP resent successfully.",
     ];
 
-    if (!error && (!success || allowedSuccessMessages.includes(success))) {
+    if (
+      !authError &&
+      (!authSuccess || allowedSuccessMessages.includes(authSuccess))
+    ) {
       return;
     }
 
@@ -23,7 +34,7 @@ const AutoClearMessage = ({ duration = 5000 }) => {
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [error, success, dispatch, duration]);
+  }, [authError, authSuccess, dispatch, duration]);
 
   const variants = {
     hidden: { opacity: 0 },
@@ -34,7 +45,7 @@ const AutoClearMessage = ({ duration = 5000 }) => {
   return (
     <div className="mb-3">
       <AnimatePresence>
-        {error && (
+        {authError && (
           <motion.div
             key="error"
             initial="hidden"
@@ -43,10 +54,10 @@ const AutoClearMessage = ({ duration = 5000 }) => {
             variants={variants}
             className="bg-red-100 text-xs sm:text-sm text-red-700 px-4 py-2 rounded shadow mb-2"
           >
-            {error}
+            {authError}
           </motion.div>
         )}
-        {success && (
+        {authSuccess && (
           <motion.div
             key="success"
             initial="hidden"
@@ -55,7 +66,7 @@ const AutoClearMessage = ({ duration = 5000 }) => {
             variants={variants}
             className="bg-green-100 text-xs sm:text-sm text-green-700 px-4 py-2 rounded shadow"
           >
-            {success}
+            {authSuccess}
           </motion.div>
         )}
       </AnimatePresence>

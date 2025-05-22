@@ -20,6 +20,8 @@ import {
 import { IoChatboxEllipses } from "react-icons/io5";
 import { MdOutlineIntegrationInstructions, MdSupport } from "react-icons/md";
 import { FiBarChart2, FiUser } from "react-icons/fi";
+import { useSelector } from "react-redux";
+import { CgProfile } from "react-icons/cg";
 
 export default function Navbar() {
   const location = useLocation();
@@ -29,6 +31,7 @@ export default function Navbar() {
   const [messageCount] = useState(3);
 
   const currentPath = location.pathname;
+  const { user } = useSelector((state) => state?.auth);
 
   const pageTitle =
     currentPath === "/dashboard/profile"
@@ -81,12 +84,16 @@ export default function Navbar() {
 
         <div className="relative">
           <Link to="/dashboard/profile">
-            <img
-              ref={avatarRef}
-              src="https://i.pravatar.cc/40"
-              alt="avatar"
-              className="w-9 h-9 rounded-full object-cover cursor-pointer"
-            />
+            {user.avatarUrl ? (
+              <img
+                ref={avatarRef}
+                src={user.avatarUrl}
+                alt={user.name || "User Avatar"}
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            ) : (
+              <CgProfile className="w-8 h-8 text-gray-600" />
+            )}
           </Link>
         </div>
       </div>
