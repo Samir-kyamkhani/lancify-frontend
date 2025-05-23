@@ -1,36 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import {
-  FiUser,
-  FiMail,
-  FiBriefcase,
-  FiPhone,
-  FiActivity,
-  FiTag,
-  FiCamera,
-} from "react-icons/fi";
-import { CgProfile } from "react-icons/cg";
-import { motion } from "framer-motion";
+import Select, { components } from "react-select";
 
-// Animations
-const containerVariant = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
-  },
-};
-
-const itemVariant = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const ProfileForm = () => {
-  const { user } = useSelector((state) => state?.auth);
+export default function ProfileForm() {
+  const { user } = useSelector((state) => state.auth);
   const fileInputRef = useRef(null);
 
   const [profile, setProfile] = useState({
@@ -40,7 +13,10 @@ const ProfileForm = () => {
     number: "",
     profession: "",
     status: "",
+    country: "",
     profileImage: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
   useEffect(() => {
@@ -52,7 +28,10 @@ const ProfileForm = () => {
         number: user.mobileNumber || "",
         profession: user.profession || "",
         status: user.status || "",
+        country: user.country || "US",
         profileImage: user.profileImage || "",
+        newPassword: "",
+        confirmPassword: "",
       });
     }
   }, [user]);
@@ -70,144 +49,178 @@ const ProfileForm = () => {
     }
   };
 
+  const handleCountryChange = (selectedOption) => {
+    setProfile((prev) => ({ ...prev, country: selectedOption.value }));
+  };
+
   const editHandler = () => {
     console.log("Updated Profile:", profile);
   };
 
-  return (
-    <motion.div
-      variants={containerVariant}
-      initial="hidden"
-      animate="visible"
-      className="max-w-4xl mx-auto px-6 py-12"
-    >
-      {/* Profile Picture */}
-      <motion.div variants={itemVariant} className="relative mx-auto w-fit mb-6">
-        {profile.profileImage ? (
-          <img
-            src={profile.profileImage}
-            alt="Profile"
-            className="w-32 h-32 object-cover rounded-full border-4 border-blue-500 shadow-lg"
-          />
-        ) : (
-          <CgProfile className="w-32 h-32 text-gray-300 border-4 border-gray-300 rounded-full shadow" />
-        )}
+  const deleteAccountHandler = () => {
+    console.log("Account Deletion Triggered");
+  };
 
-        <button
-          onClick={() => fileInputRef.current.click()}
-          type="button"
-          className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow hover:bg-gray-100 transition"
-        >
-          <FiCamera className="text-gray-600 w-5 h-5 cursor-pointer" />
-        </button>
-
-        <input
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          onChange={handleImageChange}
-          className="hidden"
-        />
-      </motion.div>
-
-      {/* Header */}
-      <motion.div
-        variants={itemVariant}
-        className="text-center mb-10"
-      >
-        <h2 className="text-3xl font-bold text-gray-800 flex justify-center items-center gap-2">
-          <FiUser />
-          Profile Information
-        </h2>
-        <p className="text-gray-500 mt-2">
-          Keep your personal and professional info up to date.
-        </p>
-      </motion.div>
-
-      {/* Form */}
-      <motion.form
-        variants={containerVariant}
-        className="grid grid-cols-1 md:grid-cols-2 gap-6"
-      >
-        {[
-          {
-            name: "fullName",
-            label: "Full Name",
-            icon: <FiUser />,
-            type: "text",
-            value: profile.fullName,
-          },
-          {
-            name: "email",
-            label: "Email",
-            icon: <FiMail />,
-            type: "email",
-            value: profile.email,
-            disabled: true,
-          },
-          {
-            name: "number",
-            label: "Phone Number",
-            icon: <FiPhone />,
-            type: "tel",
-            value: profile.number,
-          },
-          {
-            name: "profession",
-            label: "Profession",
-            icon: <FiTag />,
-            type: "text",
-            value: profile.profession,
-            disabled: true,
-          },
-          {
-            name: "companyName",
-            label: "Company Name",
-            icon: <FiBriefcase />,
-            type: "text",
-            value: profile.companyName,
-          },
-          {
-            name: "status",
-            label: "Status",
-            icon: <FiActivity />,
-            type: "text",
-            value: profile.status,
-            disabled: true,
-          },
-        ].map(({ name, label, icon, type, value, disabled }, i) => (
-          <motion.div key={name} variants={itemVariant}>
-            <label className="flex items-center text-sm font-medium text-gray-700 mb-2 gap-2">
-              {icon}
-              {label}
-            </label>
-            <input
-              name={name}
-              type={type}
-              value={value}
-              disabled={disabled}
-              onChange={handleChange}
-              placeholder={`Enter ${label.toLowerCase()}`}
-              className={`w-full px-4 py-2 rounded-xl border ${
-                disabled ? "bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-white"
-              } focus:bg-gray-200 duration-700 shadow-sm outline-none transition`}
-            />
-          </motion.div>
-        ))}
-
-        {/* Save Button */}
-        <motion.div variants={itemVariant} className="md:col-span-2">
-          <button
-            type="button"
-            onClick={editHandler}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl text-lg transition shadow"
-          >
-            Save Profile
-          </button>
-        </motion.div>
-      </motion.form>
-    </motion.div>
+  const renderInput = (label, name, type = "text", readOnly = false) => (
+    <div>
+      <label className="block text-sm font-medium mb-1">{label}</label>
+      <input
+        type={type}
+        name={name}
+        value={profile[name]}
+        onChange={handleChange}
+        readOnly={readOnly}
+        className={`w-full border border-gray-200 bg-gray-100 focus:bg-white focus:border-gray-50 outline-none rounded p-2 ${
+          readOnly ? "bg-gray-200 cursor-not-allowed" : ""
+        }`}
+      />
+    </div>
   );
-};
 
-export default ProfileForm;
+  // Country options with ISO 2-letter codes for flags
+  const countryOptions = [
+    { value: "US", label: "United States" },
+    { value: "IN", label: "India" },
+    { value: "GB", label: "United Kingdom" },
+    { value: "CA", label: "Canada" },
+    { value: "AU", label: "Australia" },
+    { value: "DE", label: "Germany" },
+    { value: "FR", label: "France" },
+    { value: "JP", label: "Japan" },
+    { value: "BR", label: "Brazil" },
+  ];
+
+  // Custom option component to render flag + country name
+  const Option = (props) => {
+    return (
+      <components.Option {...props}>
+        <img
+          src={`https://flagcdn.com/w20/${props.data.value.toLowerCase()}.png`}
+          alt={props.data.label}
+          className="inline-block mr-2"
+          style={{ width: "20px", height: "15px", objectFit: "cover" }}
+        />
+        {props.data.label}
+      </components.Option>
+    );
+  };
+
+  // Custom single value (selected) with flag
+  const SingleValue = (props) => {
+    return (
+      <components.SingleValue {...props}>
+        <img
+          src={`https://flagcdn.com/w20/${props.data.value.toLowerCase()}.png`}
+          alt={props.data.label}
+          className="inline-block mr-2"
+          style={{ width: "20px", height: "15px", objectFit: "cover" }}
+        />
+        {props.data.label}
+      </components.SingleValue>
+    );
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto p-6 animate-fade-in">
+      <div className="bg-white shadow-md rounded-2xl p-6 mt-4 space-y-6">
+        <h2 className="text-xl font-semibold">Personal Info</h2>
+
+        <div className="flex items-center gap-4">
+          <div
+            className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-lg font-bold overflow-hidden cursor-pointer"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {profile.profileImage ? (
+              <img
+                src={profile.profileImage}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              "IMG"
+            )}
+          </div>
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleImageChange}
+            className="hidden"
+          />
+        </div>
+
+        <div className="space-y-4">
+          {renderInput("Full Name", "fullName")}
+          {renderInput("Email", "email", "email", true)}
+          {renderInput("Company Name", "companyName")}
+          {renderInput("Phone Number", "number")}
+          {renderInput("Profession", "profession")}
+          {renderInput("Status", "status")}
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Country</label>
+            <Select
+              name="country"
+              options={countryOptions}
+              value={countryOptions.find((c) => c.value === profile.country)}
+              onChange={handleCountryChange}
+              components={{ Option, SingleValue }}
+              isSearchable
+              styles={{
+                control: (provided, state) => ({
+                  ...provided,
+                  backgroundColor: "#f3f4f6", // gray-100 bg
+                  borderColor: "#e5e7eb", // gray-200 border
+                  boxShadow: "none", // remove blue shadow
+                  "&:hover": {
+                    borderColor: "#d1d5db", // gray-300 on hover if you want
+                  },
+                }),
+                menu: (provided) => ({
+                  ...provided,
+                  zIndex: 9999,
+                }),
+              }}
+            />
+          </div>
+
+          <button
+            onClick={editHandler}
+            className="bg-blue-500 font-medium py-2 px-4 rounded-lg w-full hover:bg-blue-600 text-white"
+          >
+            Save Changes
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-white shadow-md rounded-2xl p-6 mt-6 space-y-4">
+        <h2 className="text-xl font-semibold">Set a password</h2>
+        {renderInput("New Password", "newPassword", "password")}
+        {renderInput("Confirm Password", "confirmPassword", "password")}
+        <button
+          onClick={editHandler}
+          className="bg-blue-500 font-medium py-2 px-4 rounded-lg w-full hover:bg-blue-600 text-white"
+        >
+          Save Password
+        </button>
+      </div>
+
+      <div className="bg-white shadow-md rounded-2xl p-6 mt-6">
+        <h2 className="text-xl text-red-600 font-semibold">
+          Delete your account
+        </h2>
+        <p className="text-sm text-gray-600 mt-2">
+          Your account, along with all associated data, content, credit card,
+          and payout information, will be permanently deleted and cannot be
+          restored.
+        </p>
+        <button
+          onClick={deleteAccountHandler}
+          className="mt-4 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg"
+        >
+          Delete my account
+        </button>
+      </div>
+    </div>
+  );
+}
