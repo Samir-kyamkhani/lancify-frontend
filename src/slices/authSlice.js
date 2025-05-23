@@ -72,7 +72,7 @@ const handleError = (err) =>
 export const signup = (userData) => async (dispatch) => {
   dispatch(authRequest());
   try {
-    const { data } = await axios.post(`${baseURL}/signup`, userData, {
+    const { data } = await axios.post(`${baseURL}/auth/signup`, userData, {
       withCredentials: true,
     });
     if (data?.data?.user) {
@@ -89,7 +89,7 @@ export const signup = (userData) => async (dispatch) => {
 export const login = (credentials) => async (dispatch) => {
   dispatch(authRequest());
   try {
-    const { data } = await axios.post(`${baseURL}/login`, credentials, {
+    const { data } = await axios.post(`${baseURL}/auth/login`, credentials, {
       withCredentials: true,
     });
     dispatch(authSuccess(data.data.user));
@@ -103,7 +103,7 @@ export const googleSignup = (googleIdToken) => async (dispatch) => {
   dispatch(authRequest());
   try {
     const { data } = await axios.post(
-      `${baseURL}/signup`,
+      `${baseURL}/auth/signup`,
       { googleIdToken },
       { withCredentials: true }
     );
@@ -118,7 +118,7 @@ export const googleLogin = (googleIdToken) => async (dispatch) => {
   dispatch(authRequest());
   try {
     const { data } = await axios.post(
-      `${baseURL}/login`,
+      `${baseURL}/auth/login`,
       { googleId: googleIdToken },
       { withCredentials: true }
     );
@@ -142,7 +142,7 @@ export const forgotPassword =
         body.newPassword = newPassword;
       }
 
-      const { data } = await axios.post(`${baseURL}${endpoint}`, body, {
+      const { data } = await axios.post(`${baseURL}/auth${endpoint}`, body, {
         withCredentials: true,
       });
 
@@ -159,7 +159,7 @@ export const resendOtp = (email) => async (dispatch) => {
   dispatch(authRequest());
   try {
     const { data } = await axios.post(
-      `${baseURL}/resend-otp`,
+      `${baseURL}/auth/resend-otp`,
       { email },
       { withCredentials: true }
     );
@@ -174,7 +174,7 @@ export const resetPassword =
     dispatch(authRequest());
     try {
       const { data } = await axios.post(
-        `${baseURL}/reset-password`,
+        `${baseURL}/auth/reset-password`,
         { currentPassword, newPassword },
         { withCredentials: true }
       );

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { baseURLClient } from "../baseURL";
+import { baseURL } from "../baseURL";
 
 const initialState = {
   clients: [],
@@ -63,7 +63,7 @@ export const addClient = (clientData) => async (dispatch) => {
 
   try {
     const { data } = await axios.post(
-      `${baseURLClient}/add-client`,
+      `${baseURL}/client/add-client`,
       clientData
     );
     dispatch(clientSuccess(data.message));
@@ -78,7 +78,7 @@ export const addClient = (clientData) => async (dispatch) => {
 export const fetchAllClients = () => async (dispatch) => {
   dispatch(clientRequest());
   try {
-    const { data } = await axios.get(`${baseURLClient}/get-all-clients`);
+    const { data } = await axios.get(`${baseURL}/client/get-all-clients`);
     dispatch(setClients(data.data));
     dispatch(clientSuccess("Fetched all clients"));
   } catch (err) {
@@ -90,7 +90,7 @@ export const fetchAllClients = () => async (dispatch) => {
 export const fetchSingleClient = (id) => async (dispatch) => {
   dispatch(clientRequest());
   try {
-    const { data } = await axios.get(`${baseURLClient}/${id}`);
+    const { data } = await axios.get(`${baseURL}/client/${id}`);
     dispatch(setSingleClient(data.data));
     dispatch(clientSuccess("Client fetched"));
   } catch (err) {
@@ -103,7 +103,7 @@ export const editClient = (updatedData) => async (dispatch) => {
   dispatch(clientRequest());
   try {
     const { data } = await axios.put(
-      `${baseURLClient}/edit-client/${updatedData.id}`,
+      `${baseURL}/client/edit-client/${updatedData.id}`,
       updatedData
     );
     dispatch(clientSuccess(data.message));
@@ -116,7 +116,7 @@ export const editClient = (updatedData) => async (dispatch) => {
 export const deleteClient = (id) => async (dispatch) => {
   dispatch(clientRequest());
   try {
-    const { data } = await axios.delete(`${baseURLClient}/delete-client/${id}`);
+    const { data } = await axios.delete(`${baseURL}/client/delete-client/${id}`);
     dispatch(clientSuccess(data.message));
     dispatch(fetchAllClients()); // Refresh list
   } catch (err) {
