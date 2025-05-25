@@ -18,7 +18,7 @@ const SelectField = ({
       value={value}
       onChange={onChange}
       required={required}
-      className={`w-full border rounded-lg p-2 ${
+      className={`w-full border rounded-lg p-2 cursor-pointer ${
         error ? "border-red-500" : "border-gray-200"
       }`}
     >

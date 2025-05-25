@@ -1,33 +1,97 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import InputField from "../../Ui/InputField";
-import SelectField from "../../Ui/SelectField";
 import BtnField from "../../Ui/BtnField";
 import TextareaField from "../../Ui/TextareaField";
+import { addTask, editTask } from "../../../slices/taskSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllTeamMemders } from "../../../slices/authSlice";
+import Select from "react-select";
 
 export default function AddTaskModal({
   onSubmit,
   onClose,
   isEdit = false,
   taskData = {},
-  defaultStatus = "Todo",
+  defaultStatus = "todo",
 }) {
+  const dispatch = useDispatch();
+  const { allTeamMembers } = useSelector((state) => state.auth);
+  const { projects } = useSelector((state) => state.projectData);
+
+  // Prepare options for Select components
+  const assigneeOptions =
+    allTeamMembers?.map((member) => ({
+      value: member.id,
+      label: member.name,
+      image: member.avatar || `/dummyProfileImg.webp`,
+    })) || [];
+
+  const projectOptions =
+    projects?.map((project) => ({
+      value: project.id,
+      label: project.title,
+    })) || [];
+
+  // Form state
   const [form, setForm] = useState({
-    title: taskData.title || "",
-    description: taskData.description || "",
-    status: taskData.status || defaultStatus,
-    priority: taskData.priority || "Medium",
-    assignee: taskData.assignee || "",
-    project: taskData.project || "",
+    title: "",
+    description: "",
+    status: defaultStatus,
+    priority: "medium",
+    assignee: "",
+    project: "",
   });
+
+  useEffect(() => {
+    setForm({
+      title: taskData.title || "",
+      description: taskData.description || "",
+      status: taskData.status || defaultStatus,
+      priority: taskData.priority || "medium",
+      assignee: taskData.userId || "",
+      project: taskData.projectId || "",
+    });
+  }, [taskData, defaultStatus]);
+
+  useEffect(() => {
+    dispatch(fetchAllTeamMemders());
+  }, [dispatch]);
+
+  // Find selected options objects for React-Select based on form.assignee and form.project
+  const selectedAssignee =
+    assigneeOptions.find((opt) => opt.value === form.assignee) || null;
+
+  const selectedProject =
+    projectOptions.find((opt) => opt.value === form.project) || null;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleAssigneeChange = (selectedOption) => {
+    setForm((prev) => ({
+      ...prev,
+      assignee: selectedOption?.value || "",
+    }));
+  };
+
+  const handleProjectChange = (selectedOption) => {
+    setForm((prev) => ({
+      ...prev,
+      project: selectedOption?.value || "",
+    }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(form);
+    if (isEdit) {
+      await dispatch(editTask({ id: taskData.id, ...form }));
+    } else {
+      await dispatch(addTask(form));
+    }
+    onSubmit && onSubmit(form);
+    onClose();
   };
 
   return (
@@ -59,57 +123,76 @@ export default function AddTaskModal({
           />
 
           <div className="flex flex-col sm:flex-row sm:space-x-2 space-y-4 sm:space-y-0">
-            <SelectField
-              label="Status"
-              name="status"
-              value={form.status}
-              onChange={handleChange}
-              options={[
-                { value: "Todo", label: "Todo" },
-                { value: "InProgress", label: "In Progress" },
-                { value: "Done", label: "Done" },
-              ]}
-              className="w-full sm:w-1/2"
-            />
-            <SelectField
-              label="Priority"
-              name="priority"
-              value={form.priority}
-              onChange={handleChange}
-              options={[
-                { value: "Low", label: "Low" },
-                { value: "Medium", label: "Medium" },
-                { value: "High", label: "High" },
-              ]}
-              className="w-full sm:w-1/2"
+            <div className="w-full sm:w-1/2">
+              <label className="block mb-1 font-medium">Status</label>
+              <select
+                name="status"
+                value={form.status}
+                onChange={handleChange}
+                className="w-full border rounded-lg p-2 border-gray-200"
+              >
+                <option value="todo">Todo</option>
+                <option value="in_progress">In Progress</option>
+                <option value="done">Done</option>
+                <option value="blocked">Blocked</option>
+              </select>
+            </div>
+            <div className="w-full sm:w-1/2">
+              <label className="block mb-1 font-medium">Priority</label>
+              <select
+                name="priority"
+                value={form.priority}
+                onChange={handleChange}
+                className="w-full border rounded-lg p-2 border-gray-200"
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="critical">Critical</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Assignee</label>
+            <Select
+              name="assignee"
+              value={selectedAssignee}
+              onChange={handleAssigneeChange}
+              options={assigneeOptions}
+              placeholder="Select team member"
+              isClearable
+              formatOptionLabel={(option) => (
+                <div className="flex items-center space-x-2">
+                  {option.image && (
+                    <img
+                      src={option.image}
+                      alt={option.label}
+                      className="w-6 h-6 rounded-full"
+                    />
+                  )}
+                  <span>{option.label}</span>
+                </div>
+              )}
             />
           </div>
 
-          <SelectField
-            label="Assignee"
-            name="assignee"
-            value={form.assignee}
-            onChange={handleChange}
-            options={[
-              { value: "", label: "Unassigned" },
-              { value: "https://i.pravatar.cc/40?u=user1", label: "John Doe" },
-              { value: "https://i.pravatar.cc/40?u=user2", label: "Jane Smith" },
-            ]}
-          />
+          <div>
+            <label className="block mb-1 font-medium">Project</label>
+            <Select
+              name="project"
+              value={selectedProject}
+              onChange={handleProjectChange}
+              options={projectOptions}
+              placeholder="Select project"
+              isClearable
+            />
+          </div>
 
-          <SelectField
-            label="Project"
-            name="project"
-            value={form.project}
-            onChange={handleChange}
-            options={[
-              { value: "", label: "Select a project" },
-              { value: "project1", label: "Website Redesign" },
-              { value: "project2", label: "Marketing Campaign" },
-            ]}
+          <BtnField
+            onClose={onClose}
+            btnName={isEdit ? "Update Task" : "Add Task"}
           />
-
-          <BtnField onClose={onClose} btnName={isEdit ? "Update Task" : "Add Task"} />
         </form>
       </div>
     </div>

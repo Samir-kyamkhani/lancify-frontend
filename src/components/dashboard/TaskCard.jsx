@@ -4,14 +4,21 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 import AddTaskModal from "./Form/AddTaskModal";
 import { priorityStyles } from "../..";
 
-export default function TaskCard({ data }) {
+export default function TaskCard({ data, onDelete }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [editTaskModal, setEditTaskModal] = useState(null);
-  const [showTaskModal, setShowTaskModal] = useState(false);
+  const [editTaskModal, setEditTaskModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleEditClient = () => {
-    setEditTaskModal(data);
-    setShowTaskModal(true);
+    setEditTaskModal(true);
+    setMenuOpen(false);
+  };
+
+  const confirmDeleteClient = () => {
+    if (onDelete) {
+      onDelete(data.id);
+    }
+    setShowDeleteConfirm(false);
     setMenuOpen(false);
   };
 
@@ -23,7 +30,7 @@ export default function TaskCard({ data }) {
           <p className="text-xs text-gray-500 mt-1">{data.description}</p>
         </div>
         <BsThreeDotsVertical
-          onClick={() => setMenuOpen(!menuOpen)}
+          onClick={() => setMenuOpen((prev) => !prev)}
           className="text-gray-400 cursor-pointer"
         />
       </div>
@@ -39,7 +46,7 @@ export default function TaskCard({ data }) {
             </li>
             <li
               onClick={() => {
-                alert(`Remove: ${data.title}`);
+                setShowDeleteConfirm(true);
                 setMenuOpen(false);
               }}
               className="flex items-center px-4 py-2 hover:bg-red-50 text-red-600 cursor-pointer"
@@ -60,20 +67,43 @@ export default function TaskCard({ data }) {
         </span>
       </div>
 
-      {showTaskModal && (
+      {editTaskModal && (
         <AddTaskModal
           isEdit={true}
-          taskData={editTaskModal}
-          onSubmit={(formData) => {
-            console.log("Client submitted:", formData);
-            setShowTaskModal(false);
-            setEditTaskModal(null);
+          taskData={data}
+          onSubmit={() => {
+            setEditTaskModal(false);
           }}
           onClose={() => {
-            setShowTaskModal(false);
-            setEditTaskModal(null);
+            setEditTaskModal(false);
           }}
         />
+      )}
+
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="bg-white p-6 rounded-xl w-full max-w-sm shadow-lg">
+            <h2 className="text-lg font-semibold mb-4">Confirm Deletion</h2>
+            <p className="text-gray-700 mb-6">
+              Are you sure you want to delete this task? This action cannot be
+              undone.
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="px-4 py-2 bg-gray-300 rounded-md cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteClient}
+                className="px-4 py-2 bg-red-600 text-white rounded-md cursor-pointer"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

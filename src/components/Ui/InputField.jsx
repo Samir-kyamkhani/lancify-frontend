@@ -7,6 +7,7 @@ const InputField = ({
   required = false,
   error,
   placeholder = "",
+  readOnly = false,
 }) => (
   <div
     className={`w-full ${
@@ -24,6 +25,7 @@ const InputField = ({
       value={value}
       onChange={onChange}
       required={required}
+      readOnly={readOnly}
       placeholder={placeholder}
       className={`border rounded-lg p-2 w-full  ${
         error ? "border-red-500" : "border-gray-200"

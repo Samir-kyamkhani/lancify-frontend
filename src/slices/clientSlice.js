@@ -67,7 +67,7 @@ export const addClient = (clientData) => async (dispatch) => {
       clientData
     );
     dispatch(clientSuccess(data.message));
-    dispatch(fetchAllClients()); // Refresh list after add
+    dispatch(fetchAllClients());
   } catch (err) {
     console.log(err);
     dispatch(clientFail(extractError(err)));

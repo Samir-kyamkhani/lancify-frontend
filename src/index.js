@@ -376,7 +376,7 @@ export const initialColumns = [
     ],
   },
   {
-    title: "InProgress",
+    title: "in_progress",
     tasks: [
       {
         title: "Develop Authentication Flow",
@@ -702,7 +702,12 @@ export const priorityStyles = {
   Medium: "bg-yellow-100 text-yellow-800",
   High: "bg-red-100 text-red-700",
 };
-
+export const projectStatusStyles = {
+  in_progress: "bg-red-100 text-red-700",
+  not_started: "bg-yellow-100 text-yellow-800",
+  completed: "bg-green-100 text-green-700",
+  cancelled: "bg-gray-100 text-gray-700",
+};
 // Sample projects with priorities
 export const projectsData = [
   {
@@ -826,7 +831,7 @@ export const statusColors = {
   Sent: "bg-blue-100 text-blue-600 border border-blue-200",
   Accepted: "bg-green-100 text-green-600 border border-green-200",
   Rejected: "bg-red-100 text-red-600 border border-red-200",
-  Active: "bg-green-100 text-green-600 border border-green-200",
+  active: "bg-green-100 text-green-600 border border-green-200",
   Invited: "bg-yellow-100 text-yellow-700 border border-yellow-300",
   Inactive: "bg-gray-100 text-gray-600 border border-gray-200",
 };
@@ -913,9 +918,9 @@ export const reportOptions = [
 ];
 
 export const roleColors = {
-  Admin: "bg-blue-100 text-blue-700 border border-blue-200",
-  Member: "bg-gray-100 text-gray-700 border border-gray-200",
-  Viewer: "bg-purple-100 text-purple-700 border border-purple-200",
+  admin: "bg-blue-100 text-blue-700 border border-blue-200",
+  member: "bg-gray-100 text-gray-700 border border-gray-200",
+  viewer: "bg-purple-100 text-purple-700 border border-purple-200",
 };
 
 ///////////////////////////////

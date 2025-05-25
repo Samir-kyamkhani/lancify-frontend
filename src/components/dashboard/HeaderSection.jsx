@@ -59,7 +59,7 @@ export default function HeaderSection() {
       {showClientModal && (
         <AddClientModal
           onSubmit={(data) => {
-            console.log("Client added:", data);
+            // console.log("Client added:", data);
             setShowClientModal(false);
           }}
           onClose={() => setShowClientModal(false)}
@@ -69,7 +69,7 @@ export default function HeaderSection() {
       {showTeamMemberModal && (
         <AddTeamMemberModal
           onSubmit={(data) => {
-            console.log("Team member added:", data);
+            // console.log("Team member added:", data);
             setShowTeamMemberModal(false);
           }}
           onClose={() => setShowTeamMemberModal(false)}
@@ -79,7 +79,7 @@ export default function HeaderSection() {
       {showProjectModal && (
         <AddProjectModal
           onSubmit={(data) => {
-            console.log("Project added:", data);
+            // console.log("Project added:", data);
             setShowProjectModal(false);
           }}
           onClose={() => setShowProjectModal(false)}
@@ -89,7 +89,7 @@ export default function HeaderSection() {
       {showProposalModal && (
         <AddProposalModal
           onSubmit={(data) => {
-            console.log("Proposal added:", data);
+            // console.log("Proposal added:", data);
             setShowProposalModal(false);
           }}
           onClose={() => setShowProposalModal(false)}
@@ -99,7 +99,6 @@ export default function HeaderSection() {
       {showInvoiceModal && (
         <AddInvoiceModal
           onSubmit={(data) => {
-            console.log("Invoice added:", data);
             setShowInvoiceModal(false);
           }}
           onClose={() => setShowInvoiceModal(false)}

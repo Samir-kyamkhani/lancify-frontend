@@ -1,31 +1,63 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import HeaderSection from "../../components/dashboard/HeaderSection";
 import ProjectOverview from "../../components/dashboard/ProjectOverview";
 import AddTaskModal from "../../components/dashboard/Form/AddTaskModal";
-import { initialColumns } from "../../index";
 import TaskColumn from "../../components/dashboard/TaskColumn";
 import { BsPlus } from "react-icons/bs";
 import { getUserRole } from "../../settings";
 import UserProjectPage from "../clientDashboard/UserProjectPage";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllTasks } from "../../slices/taskSlice";
+
+function formatTitle(status) {
+  return status
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
 
 export default function ProjectPage() {
-  const [columns, setColumns] = useState(initialColumns);
   const [showModal, setShowModal] = useState(false);
-  const [currentColumn, setCurrentColumn] = useState("Todo");
+  const [currentColumn, setCurrentColumn] = useState("todo");
 
   const role = getUserRole();
-  const handleAddClick = (columnTitle = "Todo") => {
-    setCurrentColumn(columnTitle);
+  const dispatch = useDispatch();
+
+  const { tasks = [] } = useSelector((state) => state.taskData);
+  const [columns, setColumns] = useState([]);
+
+  // Fetch all tasks on mount
+  useEffect(() => {
+    dispatch(fetchAllTasks());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const uniqueStatuses = [
+      ...new Set(tasks.map((task) => task.status.toLowerCase())),
+    ];
+
+    const updatedColumns = uniqueStatuses.map((status) => ({
+      title: formatTitle(status),
+      statusKey: status,
+      tasks: tasks.filter((task) => task.status.toLowerCase() === status),
+    }));
+
+    setColumns(updatedColumns);
+  }, [tasks]);
+
+  const handleAddClick = (statusKey = "todo") => {
+    setCurrentColumn(statusKey);
     setShowModal(true);
   };
 
   const handleAddTask = (taskData) => {
-    const updatedColumns = columns.map((col) =>
-      col.title === taskData.status
-        ? { ...col, tasks: [...col.tasks, taskData] }
-        : col
+    setColumns((prev) =>
+      prev.map((col) =>
+        col.statusKey === taskData.status.toLowerCase()
+          ? { ...col, tasks: [...col.tasks, taskData] }
+          : col
+      )
     );
-    setColumns(updatedColumns);
     setShowModal(false);
   };
 
@@ -42,19 +74,20 @@ export default function ProjectPage() {
                 Task Board
               </h2>
               <button
-                onClick={() => handleAddClick("Todo")}
-                className="flex items-center gap-2 w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                onClick={() => handleAddClick("todo")}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
               >
                 <BsPlus /> Add Task
               </button>
             </div>
 
-            <div className="flex gap-6 min-w-full sm:gap-10">
+            <div className="flex gap-6 min-w-full sm:gap-10 flex-col justify-center items-center sm:flex-row sm:justify-start sm:items-start">
               {columns.map((col, idx) => (
                 <TaskColumn
                   key={idx}
-                  {...col}
-                  onAddTask={() => handleAddClick(col.title)}
+                  title={col.title}
+                  tasks={col.tasks}
+                  onAddTask={() => handleAddClick(col.statusKey)}
                 />
               ))}
             </div>

@@ -2,14 +2,14 @@ import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { baseURL } from "../baseURL";
 
-// ✅ Axios global config (Optional but recommended)
 axios.defaults.withCredentials = true;
 
-// Initial state from localStorage
 const initialUser = JSON.parse(localStorage.getItem("user") || "null");
 
 const initialState = {
   user: initialUser,
+  allTeamMembers: [],
+  fetchAllUsers: [],
   isLoading: false,
   error: null,
   success: null,
@@ -50,6 +50,16 @@ const authSlice = createSlice({
       state.error = null;
       localStorage.removeItem("user");
     },
+    setAllTeamMembers: (state, action) => {
+      state.allTeamMembers = action.payload;
+      state.isLoading = false;
+      state.error = null;
+    },
+    setAllUsers: (state, action) => {
+      state.fetchAllUsers = action.payload;
+      state.isLoading = false;
+      state.error = null;
+    },
   },
 });
 
@@ -60,6 +70,8 @@ export const {
   messageOnlySuccess,
   clearMessages,
   logout,
+  setAllTeamMembers,
+  setAllUsers,
 } = authSlice.actions;
 
 export default authSlice.reducer;
@@ -72,9 +84,7 @@ const handleError = (err) =>
 export const signup = (userData) => async (dispatch) => {
   dispatch(authRequest());
   try {
-    const { data } = await axios.post(`${baseURL}/auth/signup`, userData, {
-      withCredentials: true,
-    });
+    const { data } = await axios.post(`${baseURL}/auth/signup`, userData);
     if (data?.data?.user) {
       dispatch(authSuccess(data.data.user));
       localStorage.setItem("user", JSON.stringify(data.data.user));
@@ -89,9 +99,7 @@ export const signup = (userData) => async (dispatch) => {
 export const login = (credentials) => async (dispatch) => {
   dispatch(authRequest());
   try {
-    const { data } = await axios.post(`${baseURL}/auth/login`, credentials, {
-      withCredentials: true,
-    });
+    const { data } = await axios.post(`${baseURL}/auth/login`, credentials);
     dispatch(authSuccess(data.data.user));
     localStorage.setItem("user", JSON.stringify(data.data.user));
   } catch (err) {
@@ -102,11 +110,9 @@ export const login = (credentials) => async (dispatch) => {
 export const googleSignup = (googleIdToken) => async (dispatch) => {
   dispatch(authRequest());
   try {
-    const { data } = await axios.post(
-      `${baseURL}/auth/signup`,
-      { googleIdToken },
-      { withCredentials: true }
-    );
+    const { data } = await axios.post(`${baseURL}/auth/signup`, {
+      googleIdToken,
+    });
     dispatch(authSuccess(data.data.user));
     localStorage.setItem("user", JSON.stringify(data.data.user));
   } catch (err) {
@@ -117,11 +123,9 @@ export const googleSignup = (googleIdToken) => async (dispatch) => {
 export const googleLogin = (googleIdToken) => async (dispatch) => {
   dispatch(authRequest());
   try {
-    const { data } = await axios.post(
-      `${baseURL}/auth/login`,
-      { googleId: googleIdToken },
-      { withCredentials: true }
-    );
+    const { data } = await axios.post(`${baseURL}/auth/login`, {
+      googleId: googleIdToken,
+    });
     dispatch(authSuccess(data.data.user));
     localStorage.setItem("user", JSON.stringify(data.data.user));
   } catch (err) {
@@ -142,10 +146,7 @@ export const forgotPassword =
         body.newPassword = newPassword;
       }
 
-      const { data } = await axios.post(`${baseURL}/auth${endpoint}`, body, {
-        withCredentials: true,
-      });
-
+      const { data } = await axios.post(`${baseURL}/auth${endpoint}`, body);
       dispatch(messageOnlySuccess(data.message));
       return { success: true, message: data.message };
     } catch (err) {
@@ -158,11 +159,7 @@ export const forgotPassword =
 export const resendOtp = (email) => async (dispatch) => {
   dispatch(authRequest());
   try {
-    const { data } = await axios.post(
-      `${baseURL}/auth/resend-otp`,
-      { email },
-      { withCredentials: true }
-    );
+    const { data } = await axios.post(`${baseURL}/auth/resend-otp`, { email });
     dispatch(messageOnlySuccess(data.message));
   } catch (err) {
     dispatch(authFail(handleError(err)));
@@ -173,11 +170,10 @@ export const resetPassword =
   (currentPassword, newPassword) => async (dispatch) => {
     dispatch(authRequest());
     try {
-      const { data } = await axios.post(
-        `${baseURL}/auth/reset-password`,
-        { currentPassword, newPassword },
-        { withCredentials: true }
-      );
+      const { data } = await axios.post(`${baseURL}/auth/reset-password`, {
+        currentPassword,
+        newPassword,
+      });
       dispatch(messageOnlySuccess(data.message));
     } catch (err) {
       dispatch(authFail(handleError(err)));
@@ -187,4 +183,63 @@ export const resetPassword =
 export const logoutUser = () => (dispatch) => {
   localStorage.removeItem("user");
   dispatch(logout());
+};
+
+export const addTeamMember = (teamMemberData) => async (dispatch) => {
+  dispatch(authRequest());
+  try {
+    const { data } = await axios.post(
+      `${baseURL}/auth/add-team-member`,
+      teamMemberData
+    );
+    dispatch(messageOnlySuccess(data.message));
+  } catch (err) {
+    dispatch(authFail(handleError(err)));
+  }
+};
+
+export const fetchAllTeamMemders = () => async (dispatch) => {
+  dispatch(authRequest());
+  try {
+    const { data } = await axios.get(`${baseURL}/auth/get-all-members`);
+    dispatch(setAllTeamMembers(data.data));
+    dispatch(messageOnlySuccess(data.message));
+  } catch (err) {
+    dispatch(authFail(handleError(err)));
+  }
+};
+
+export const editTeamMember = (editTeamMemberData) => async (dispatch) => {
+  dispatch(authRequest());
+  try {
+    const { data } = await axios.put(
+      `${baseURL}/auth/update-member/${editTeamMemberData.id}`,
+      editTeamMemberData
+    );
+    dispatch(messageOnlySuccess(data.message));
+  } catch (err) {
+    dispatch(authFail(handleError(err)));
+  }
+};
+export const deleteTeamMemders = (id) => async (dispatch) => {
+  dispatch(authRequest());
+  try {
+    const { data } = await axios.delete(`${baseURL}/auth/delete-member/${id}`);
+    dispatch(messageOnlySuccess(data.message));
+  } catch (err) {
+    dispatch(authFail(handleError(err)));
+  }
+};
+
+export const getAllUsers = () => async (dispatch) => {
+  dispatch(authRequest());
+  try {
+    const { data } = await axios.get(`${baseURL}/auth/get-all-multipal-users`);
+    console.log(data);
+
+    dispatch(setAllUsers(data?.data));
+    dispatch(messageOnlySuccess(data.message));
+  } catch (err) {
+    dispatch(authFail(handleError(err)));
+  }
 };
