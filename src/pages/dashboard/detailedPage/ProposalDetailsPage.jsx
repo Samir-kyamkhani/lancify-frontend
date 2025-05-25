@@ -1,12 +1,18 @@
-import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { proposals } from "../../../index";
+import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { fetchSingleProposal } from "../../../slices/proposalSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const ProposalDetailsPage = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { proposal, loading, error } = useSelector(
+    (state) => state.proposalData
+  );
 
-  const proposal = proposals.find((p) => String(p.id) === String(id));
+  useEffect(() => {
+    if (id) dispatch(fetchSingleProposal(id));
+  }, [id, dispatch]);
 
   if (!proposal) {
     return (
@@ -28,10 +34,13 @@ const ProposalDetailsPage = () => {
       {/* Info Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
         {[
-          { label: "Client Name", value: proposal.clientName },
+          { label: "Client Name", value: proposal.client.name },
           { label: "Project Name", value: proposal.projectName },
           { label: "Amount ($)", value: `$${proposal.amount}` },
-          { label: "Date", value: proposal.date },
+          {
+            label: "Date",
+            value: new Date(proposal.date).toLocaleDateString(),
+          },
           { label: "Status", value: proposal.status },
         ].map((item, i) => (
           <div key={i}>
@@ -48,15 +57,18 @@ const ProposalDetailsPage = () => {
       <Section title="Proposed Services" content={proposal.proposedServices} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-        <Detail label="Your Name/Agency" value={proposal.yourName} />
-        <Detail label="Your Expertise" value={proposal.yourExpertise} />
+        <Detail label="Your Name/Agency" value={proposal.agency} />
+        <Detail
+          label="Your Expertise"
+          value={proposal.tags.map((tag) => tag.name).join(", ")}
+        />
         <Detail label="Tone" value={proposal.tone} />
       </div>
 
       {/* Read-only Text Area */}
       <div>
         <div className="h-fit overflow-auto border rounded-md p-4 bg-gray-50 text-gray-800 whitespace-pre-wrap">
-          {proposal.generatedProposal}
+          {proposal.generatedProposal || proposal.proposedServices}
         </div>
       </div>
     </div>

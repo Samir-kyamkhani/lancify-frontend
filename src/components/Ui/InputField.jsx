@@ -3,7 +3,7 @@ const InputField = ({
   name,
   value,
   onChange,
-  type = "text",
+  type,
   required = false,
   error,
   placeholder = "",
