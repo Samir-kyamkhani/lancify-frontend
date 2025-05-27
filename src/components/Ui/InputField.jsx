@@ -3,7 +3,7 @@ const InputField = ({
   name,
   value,
   onChange,
-  type,
+  type = 'text',
   required = false,
   error,
   placeholder = "",
@@ -27,7 +27,7 @@ const InputField = ({
       required={required}
       readOnly={readOnly}
       placeholder={placeholder}
-      className={`border rounded-lg p-2 w-full  ${
+      className={`border rounded-lg p-2 w-full ${readOnly && 'cursor-not-allowed outline-none'} ${
         error ? "border-red-500" : "border-gray-200"
       }`}
     />

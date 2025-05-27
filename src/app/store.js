@@ -4,6 +4,7 @@ import clientReducer from "../slices/clientSlice.js";
 import projectReducer from "../slices/projectSlice.js";
 import taskReducer from "../slices/taskSlice.js";
 import proposalReducer from "../slices/proposalSlice.js";
+import paymentReducer from "../slices/paymentSlice.js";
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
     projectData: projectReducer,
     taskData: taskReducer,
     proposalData: proposalReducer,
+    paymentData: paymentReducer,
   },
 });

@@ -11,7 +11,7 @@ export default function DynamicButton({ onClick }) {
     "/dashboard/clients": "Add Client",
     "/dashboard/proposals": "Add Proposal",
     "/dashboard/projects": "Add Project",
-    "/dashboard/payment": "Create Invoice",
+    "/dashboard/payments": "Create Invoice",
     "/dashboard/teams": "Add Team",
     "/dashboard/social-media-management": "Schedule Post",
   };

@@ -33,7 +33,7 @@ export default function HeaderSection() {
       case "/dashboard/proposals":
         setShowProposalModal(true);
         break;
-      case "/dashboard/payment":
+      case "/dashboard/payments":
         setShowInvoiceModal(true);
         break;
       default:

@@ -285,7 +285,7 @@ export default function ClientsPage() {
       )}
 
       {showDeleteConfirm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 px-6">
           <div className="bg-white p-6 rounded-xl w-full max-w-sm shadow-lg">
             <h2 className="text-lg font-semibold mb-4">Confirm Deletion</h2>
             <p className="text-gray-700 mb-6">
