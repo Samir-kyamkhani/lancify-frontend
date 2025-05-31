@@ -52,7 +52,7 @@ const messages = [
 // Mock notification settings component
 function NotificationSettings() {
   return (
-    <div className="bg-white rounded-xl shadow p-6">
+    <div className="bg-white shadow p-6">
       <h3 className="text-lg font-semibold mb-4">Notification Settings</h3>
       <div className="space-y-3">
         <label className="flex items-center">
@@ -132,7 +132,7 @@ export default function InboxPage() {
                     key={msg.id}
                     onClick={() => setSelectedId(msg.id)}
                     className={`
-                        p-3 sm:p-4 cursor-pointer hover:bg-white transition-colors duration-200
+                        p-4 cursor-pointer border-b bg-white border-gray-50 hover:bg-gray-50 transition-colors
                         ${
                           selectedId === msg.id
                             ? "bg-blue-50 border-r-2 border-blue-500"
@@ -273,11 +273,7 @@ export default function InboxPage() {
       </div>
 
       {/* Admin notification settings */}
-      {role === "admin" && (
-        <div className="mt-6">
-          <NotificationSettings />
-        </div>
-      )}
+      {role === "admin" && <NotificationSettings />}
     </>
   );
 }

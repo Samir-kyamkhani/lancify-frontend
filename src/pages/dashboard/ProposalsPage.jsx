@@ -72,7 +72,7 @@ export default function ProposalsPage() {
     if (proposalDelete) {
       dispatch(deleteProposal(proposalDelete));
       setShowDeleteConfirm(false);
-      setDeleteMember(null);
+      setProposalDelete(null);
     }
   };
 
@@ -124,8 +124,8 @@ export default function ProposalsPage() {
   return (
     <>
       {role === "admin" && (
-        <div className="overflow-auto">
-          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-8">
+        <div className="overflow-auto -mx-4 sm:mx-0">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100  p-4 mb-4 sm:p-8 sm:mb-8">
             <HeaderSection
               title="Proposal Management"
               subtitle="Streamline your team's proposal workflow"
@@ -133,8 +133,6 @@ export default function ProposalsPage() {
               setSearchTerm={setSearchTerm}
               filterStatus={filterStatus}
               setFilterStatus={setFilterStatus}
-              // viewMode={viewMode}
-              // setViewMode={setViewMode}
             />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 mb-10">
@@ -153,35 +151,32 @@ export default function ProposalsPage() {
             </div>
           </div>
 
-          <div className="overflow-x-auto bg-white rounded-xl border border-gray-200 shadow-sm">
-            <table className="w-full text-sm text-left">
+          {/* Responsive table container */}
+          <div className="overflow-x-auto  bg-white rounded-xl border border-gray-200 shadow-sm">
+            <table className="min-w-full text-sm text-left">
               <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
                 <tr>
-                  <th className="px-5 py-3">
+                  <th className="p-4">
                     <input type="checkbox" className="accent-blue-600" />
                   </th>
-                  <th className="px-5 py-3 font-semibold">Project Name</th>
-                  <th className="px-5 py-3 font-semibold">Client</th>
-                  <th className="px-5 py-3 font-semibold">Status</th>
-                  <th className="px-5 py-3 font-semibold">Date</th>
-                  <th className="px-5 py-3 font-semibold">Amount</th>
-                  <th className="px-5 py-3 font-semibold text-right">{""}</th>
+                  <th className="p-4 font-semibold">Project Name</th>
+                  <th className="p-4 font-semibold hidden sm:table-cell">Client</th>
+                  <th className="p-4 font-semibold">Status</th>
+                  <th className="p-4 font-semibold hidden lg:table-cell">Date</th>
+                  <th className="p-4 font-semibold hidden lg:table-cell">Amount</th>
+                  <th className="p-4 text-right font-semibold rounded-tr-xl">{" "}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {filteredProposals.length > 0 ? (
                   filteredProposals.map((item, index) => (
-                    <tr key={item.id} className="hover:bg-gray-50 transition">
-                      <td className="px-5 py-4">
+                    <tr key={item.id} className="hover:bg-gray-50 transition cursor-default">
+                      <td className="p-4">
                         <input type="checkbox" className="accent-blue-600" />
                       </td>
-                      <td className="px-5 py-4 font-medium text-gray-800">
-                        {item.projectName}
-                      </td>
-                      <td className="px-5 py-4 text-gray-800">
-                        {item.client.name}
-                      </td>
-                      <td className="px-5 py-4">
+                      <td className="p-4 font-medium text-gray-800 whitespace-nowrap">{item.projectName}</td>
+                      <td className="p-4 hidden sm:table-cell">{item.client.name}</td>
+                      <td className="p-4">
                         <span
                           className={`text-xs px-3 py-1 rounded-full font-semibold whitespace-nowrap ${
                             statusColors[item.status]
@@ -190,41 +185,42 @@ export default function ProposalsPage() {
                           {item.status}
                         </span>
                       </td>
-                      <td className="px-5 py-4 text-gray-700">
+                      <td className="p-4 hidden lg:table-cell whitespace-nowrap">
                         {new Date(item.date).toLocaleDateString()}
                       </td>
-                      <td className="px-5 py-4 text-gray-700">
-                        ${item.amount}
-                      </td>
-                      <td className="px-5 py-4 text-right">
-                        <FiMoreHorizontal
-                          className="text-xl cursor-pointer text-gray-600 hover:text-blue-600"
+                      <td className="p-4 hidden lg:table-cell whitespace-nowrap">${item.amount}</td>
+                      <td className="p-4 text-right relative">
+                        <button
                           onClick={() =>
                             setMenuIndex(menuIndex === index ? null : index)
                           }
-                        />
+                          className="p-2 hover:bg-gray-100 rounded-lg"
+                          aria-label="Actions menu"
+                        >
+                          <FiMoreHorizontal className="text-gray-600 hover:text-blue-600 text-xl" />
+                        </button>
                         {menuIndex === index && (
-                          <div className="absolute right-8 mt-2 w-44 bg-white border border-gray-200 rounded-md shadow-lg z-10 text-sm">
+                          <div className="absolute right-4 mt-2 w-44 bg-white border border-gray-200 rounded-xl shadow-xl z-20 text-sm">
                             <ul className="divide-y divide-gray-100">
-                              <li className="hover:bg-gray-100 cursor-pointer">
+                              <li>
                                 <Link
                                   to={`/dashboard/proposal/${item.id}`}
-                                  className="flex items-center px-4 py-2 text-gray-700"
+                                  className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-t-xl"
                                 >
-                                  <FaEye className="mr-3" /> View Details
+                                  <FaEye /> View Details
                                 </Link>
                               </li>
                               <li
                                 onClick={() => handleEditClient(item)}
-                                className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer"
                               >
-                                <FaEdit className="mr-3 text-gray-600" /> Edit
+                                <FaEdit className="text-gray-600" /> Edit
                               </li>
                               <li
                                 onClick={() => handleDeleteProposal(item.id)}
-                                className="flex items-center px-4 py-2 hover:bg-gray-100 text-red-600 cursor-pointer"
+                                className="flex items-center gap-2 px-4 py-2 hover:bg-red-100 text-red-600 cursor-pointer rounded-b-xl"
                               >
-                                <FaTrash className="mr-3" /> Delete
+                                <FaTrash /> Delete
                               </li>
                             </ul>
                           </div>
@@ -234,7 +230,7 @@ export default function ProposalsPage() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="7">
+                    <td colSpan={7}>
                       <EmptyState
                         searchTerm={searchTerm}
                         setSearchTerm={setSearchTerm}
@@ -256,7 +252,7 @@ export default function ProposalsPage() {
           {/* Add/Edit Proposal Modal */}
           {showProposalModal && (
             <AddProposalModal
-              isEdit={true}
+              isEdit={!!editProposalModal}
               proposalData={editProposalModal}
               onClose={() => {
                 setShowProposalModal(false);

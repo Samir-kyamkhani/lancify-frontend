@@ -552,7 +552,7 @@ export default function ChatPage() {
           <div
             className={`
             bg-white sm:rounded-2xl
-            ${isMobile ? "rounded-3xl" : "rounded-2xl"}
+            ${isMobile ? "rounded-xl" : "rounded-2xl"}
             max-h-[100vh]
           `}
           >

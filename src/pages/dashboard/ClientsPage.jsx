@@ -49,7 +49,7 @@ const ClientCard = memo(
     };
 
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-300 p-6 relative overflow-hidden">
+      <div className="bg-white rounded-2xl -mx-4 sm:mx-0 shadow-sm border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-300 p-6 relative overflow-hidden">
         {/* Selection checkbox */}
         <div className="absolute top-4 left-4 z-10">
           <input
@@ -186,7 +186,7 @@ const TableRow = memo(
     menuIndex,
     setMenuIndex,
   }) => (
-    <tr className="hover:bg-gray-50 transition-colors">
+    <tr className="hover:bg-gray-50  transition-colors">
       <td className="px-6 py-4">
         <input
           type="checkbox"
@@ -398,7 +398,7 @@ export default function ClientsPage() {
     <>
       <div>
         {/* Header Section */}
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-8">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4 -mx-4 sm:mx-0 sm:p-8 sm:mb-8">
           <HeaderSection
             title="Client Management"
             subtitle="Manage your clients and grow your business"
@@ -480,7 +480,7 @@ export default function ClientsPage() {
               </div>
             ) : (
               // table row
-              <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="bg-white rounded-xl -mx-4 sm:mx-0 shadow-sm border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-gray-50 border-b border-gray-200">
@@ -555,7 +555,7 @@ export default function ClientsPage() {
       {/* Email Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4">
-          <div className="bg-white rounded-3xl w-full max-w-2xl mx-4 shadow-2xl">
+          <div className="bg-white rounded-xl w-full max-w-2xl mx-4 shadow-2xl">
             <div className="p-8 border-b border-gray-200">
               <h2 className="text-2xl font-bold text-gray-900">
                 Compose Bulk Email

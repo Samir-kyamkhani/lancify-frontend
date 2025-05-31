@@ -40,7 +40,7 @@ const SupportPage = () => {
       </section>
 
       {/* Contact Support */}
-      <section className="bg-white/60 backdrop-blur-lg p-6 sm:p-10 rounded-3xl shadow-xl transition-all hover:shadow-2xl">
+      <section className="bg-white/60 backdrop-blur-lg p-6 sm:p-10 rounded-xl shadow-xl transition-all hover:shadow-2xl">
         <div className="flex items-center gap-3 mb-5">
           <FiMail className="text-blue-600 text-2xl" />
           <h2 className="text-2xl font-semibold">Contact Support</h2>

@@ -94,7 +94,7 @@ export default function TeamPage() {
 
   return (
     <>
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-8">
+      <div className="bg-white -mx-4 sm:mx-0 rounded-xl shadow-sm border border-gray-100 p-4 mb-4 sm:p-8 sm:mb-8">
         <HeaderSection
           title="Team Management"
           subtitle="Organize members, assign roles, and manage access."
@@ -117,20 +117,21 @@ export default function TeamPage() {
           ))}
         </div>
       </div>
-      <div className="overflow-x-auto bg-white/80 backdrop-blur-lg rounded-2xl shadow border border-white/20">
+
+      <div className="overflow-x-auto -mx-4 sm:mx-0 bg-white/80 backdrop-blur-lg rounded-2xl shadow border border-white/20">
         <table className="min-w-full text-sm">
           <thead className="bg-slate-100">
             <tr>
               <th className="p-4 text-left text-slate-700 font-semibold">
                 Name
               </th>
-              <th className="p-4 text-left text-slate-700 font-semibold">
+              <th className="p-4 text-left text-slate-700 font-semibold hidden sm:table-cell">
                 Email
               </th>
               <th className="p-4 text-left text-slate-700 font-semibold">
                 Status
               </th>
-              <th className="p-4 text-left text-slate-700 font-semibold">
+              <th className="p-4 text-left text-slate-700 font-semibold hidden lg:table-cell">
                 Role
               </th>
               <th className="p-4 text-right text-slate-700 font-semibold rounded-tr-2xl">
@@ -161,8 +162,10 @@ export default function TeamPage() {
                   key={member.id}
                   className="hover:bg-slate-50 transition cursor-default"
                 >
-                  <td className="p-4">{member.name}</td>
-                  <td className="p-4">{member.email}</td>
+                  <td className="p-4 flex items-center gap-3 whitespace-nowrap">
+                    <span className="font-medium">{member.name}</span>
+                  </td>
+                  <td className="p-4 hidden sm:table-cell">{member.email}</td>
                   <td className="p-4">
                     <span
                       className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
@@ -174,7 +177,7 @@ export default function TeamPage() {
                       {member.status}
                     </span>
                   </td>
-                  <td className="p-4">{member.role}</td>
+                  <td className="p-4 hidden lg:table-cell">{member.role}</td>
                   <td className="p-4 text-right relative">
                     <button
                       onClick={() =>

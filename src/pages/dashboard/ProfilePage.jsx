@@ -96,7 +96,7 @@ export default function ProfileForm() {
             readOnly={readOnly}
             placeholder={placeholder || `Enter ${label.toLowerCase()}`}
             className={`
-              w-full border-2 transition-all duration-300 rounded-2xl p-4 text-sm bg-white
+              w-full border-2 transition-all duration-300 rounded-lg p-4 text-sm bg-white
               ${icon ? 'pl-12' : ''}
               ${isPassword ? 'pr-12' : ''}
               ${readOnly 
@@ -187,16 +187,16 @@ export default function ProfileForm() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl px-4 py-8">
         <div className="lg:grid lg:grid-cols-12 lg:gap-8">
           {/* Sidebar */}
           <div className="lg:col-span-3">
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl shadow-gray-900/5 border border-gray-200/50 sticky top-24">
+            <div className="bg-white/80 backdrop-blur-xl rounded-xl p-6 shadow-xl shadow-gray-900/5 border border-gray-200/50 sticky top-24">
               {/* Profile Summary */}
               <div className="text-center mb-8">
                 <div className="relative inline-block">
                   <div
-                    className="w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center overflow-hidden cursor-pointer group transition-all duration-300 hover:shadow-xl"
+                    className="w-20 h-20 rounded-lg bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center overflow-hidden cursor-pointer group transition-all duration-300 hover:shadow-xl"
                     onClick={() => fileInputRef.current?.click()}
                   >
                     {profile.profileImage ? (
@@ -204,7 +204,7 @@ export default function ProfileForm() {
                     ) : (
                       <FaUser className="text-2xl text-gray-400" />
                     )}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 rounded-2xl flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 rounded-lg flex items-center justify-center">
                       <FaCamera className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
                   </div>
@@ -238,7 +238,7 @@ export default function ProfileForm() {
               </nav>
 
               {/* Quick Stats */}
-              <div className="mt-8 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl">
+              <div className="mt-8 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
                 <h4 className="text-sm font-semibold text-gray-700 mb-3">Account Status</h4>
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs">
@@ -264,13 +264,13 @@ export default function ProfileForm() {
               {activeTab === 'profile' && (
                 <div className="space-y-8">
                   {/* Personal Information */}
-                  <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl shadow-gray-900/5 border border-gray-200/50">
+                  <div className="bg-white/80 backdrop-blur-xl rounded-xl p-8 shadow-xl shadow-gray-900/5 border border-gray-200/50">
                     <div className="flex items-center justify-between mb-8">
                       <div>
                         <h2 className="text-2xl font-bold text-gray-900">Personal Information</h2>
                         <p className="text-gray-600 mt-1">Update your personal details and information.</p>
                       </div>
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                         <FaUser className="text-white" />
                       </div>
                     </div>
@@ -328,7 +328,7 @@ export default function ProfileForm() {
                     <button
                       onClick={editHandler}
                       disabled={isLoading}
-                      className="w-full md:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-4 px-8 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                      className="w-full md:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-4 px-8 rounded-lg transition-all duration-200 shadow-lg shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                     >
                       {isLoading ? (
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -344,13 +344,13 @@ export default function ProfileForm() {
               {activeTab === 'security' && (
                 <div className="space-y-8">
                   {/* Password Settings */}
-                  <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl shadow-gray-900/5 border border-gray-200/50">
+                  <div className="bg-white/80 backdrop-blur-xl rounded-xl p-8 shadow-xl shadow-gray-900/5 border border-gray-200/50">
                     <div className="flex items-center justify-between mb-8">
                       <div>
                         <h2 className="text-2xl font-bold text-gray-900">Password & Security</h2>
                         <p className="text-gray-600 mt-1">Keep your account secure with a strong password.</p>
                       </div>
-                      <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-2xl flex items-center justify-center">
+                      <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg flex items-center justify-center">
                         <FaLock className="text-white" />
                       </div>
                     </div>
@@ -360,7 +360,7 @@ export default function ProfileForm() {
                       {renderInput("Confirm Password", "confirmPassword", "password", false, <FaLock />, "Confirm new password")}
                     </div>
 
-                    <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-8">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
                       <h4 className="font-semibold text-blue-900 mb-2">Password Requirements</h4>
                       <ul className="text-sm text-blue-800 space-y-1">
                         <li>• At least 8 characters long</li>
@@ -373,7 +373,7 @@ export default function ProfileForm() {
                     <button
                       onClick={editHandler}
                       disabled={isLoading}
-                      className="w-full md:w-auto bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-medium py-4 px-8 rounded-2xl transition-all duration-200 shadow-lg shadow-green-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                      className="w-full md:w-auto bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-medium py-4 px-8 rounded-lg transition-all duration-200 shadow-lg shadow-green-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                     >
                       {isLoading ? (
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -385,18 +385,18 @@ export default function ProfileForm() {
                   </div>
 
                   {/* Danger Zone */}
-                  <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl shadow-gray-900/5 border border-red-200/50">
+                  <div className="bg-white/80 backdrop-blur-xl rounded-xl p-8 shadow-xl shadow-gray-900/5 border border-red-200/50">
                     <div className="flex items-center justify-between mb-6">
                       <div>
                         <h2 className="text-2xl font-bold text-red-600">Danger Zone</h2>
                         <p className="text-gray-600 mt-1">Irreversible and destructive actions.</p>
                       </div>
-                      <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center">
+                      <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-600 rounded-lg flex items-center justify-center">
                         <FaTrash className="text-white" />
                       </div>
                     </div>
 
-                    <div className="bg-red-50 border border-red-200 rounded-2xl p-6 mb-6">
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
                       <h3 className="text-lg font-semibold text-red-800 mb-3">Delete Account</h3>
                       <p className="text-sm text-red-700 leading-relaxed mb-4">
                         Once you delete your account, there is no going back. Please be certain. All your data, 
@@ -411,7 +411,7 @@ export default function ProfileForm() {
 
                     <button
                       onClick={deleteAccountHandler}
-                      className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-medium py-4 px-8 rounded-2xl transition-all duration-200 shadow-lg shadow-red-500/25 flex items-center gap-3"
+                      className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-medium py-4 px-8 rounded-lg transition-all duration-200 shadow-lg shadow-red-500/25 flex items-center gap-3"
                     >
                       <FaTrash />
                       Delete My Account
@@ -421,13 +421,13 @@ export default function ProfileForm() {
               )}
 
               {activeTab === 'preferences' && (
-                <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl shadow-gray-900/5 border border-gray-200/50">
+                <div className="bg-white/80 backdrop-blur-xl rounded-xl p-8 shadow-xl shadow-gray-900/5 border border-gray-200/50">
                   <div className="flex items-center justify-between mb-8">
                     <div>
                       <h2 className="text-2xl font-bold text-gray-900">Preferences</h2>
                       <p className="text-gray-600 mt-1">Customize your experience and notifications.</p>
                     </div>
-                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
                       <FaBell className="text-white" />
                     </div>
                   </div>

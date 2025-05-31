@@ -7,7 +7,7 @@ import { fetchAllTeamMemders, getAllUsers } from "../../slices/authSlice";
 // Modern icon components
 const DashboardIcon = () => (
   <svg
-    className="w-5 h-5"
+    className="w-4.5 h-4.5"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -22,7 +22,7 @@ const DashboardIcon = () => (
 
 const InboxIcon = () => (
   <svg
-    className="w-5 h-5"
+    className="w-4.5 h-4.5"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -35,7 +35,7 @@ const InboxIcon = () => (
 
 const ChatIcon = () => (
   <svg
-    className="w-5 h-5"
+    className="w-4.5 h-4.5"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -47,7 +47,7 @@ const ChatIcon = () => (
 
 const ClientsIcon = () => (
   <svg
-    className="w-5 h-5"
+    className="w-4.5 h-4.5"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -62,7 +62,7 @@ const ClientsIcon = () => (
 
 const TeamsIcon = () => (
   <svg
-    className="w-5 h-5"
+    className="w-4.5 h-4.5"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -75,7 +75,7 @@ const TeamsIcon = () => (
 
 const ProposalsIcon = () => (
   <svg
-    className="w-5 h-5"
+    className="w-4.5 h-4.5"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -91,7 +91,7 @@ const ProposalsIcon = () => (
 
 const ProjectsIcon = () => (
   <svg
-    className="w-5 h-5"
+    className="w-4.5 h-4.5"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -105,7 +105,7 @@ const ProjectsIcon = () => (
 
 const PaymentsIcon = () => (
   <svg
-    className="w-5 h-5"
+    className="w-4.5 h-4.5"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -118,7 +118,7 @@ const PaymentsIcon = () => (
 
 const IntegrationsIcon = () => (
   <svg
-    className="w-5 h-5"
+    className="w-4.5 h-4.5"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -130,7 +130,7 @@ const IntegrationsIcon = () => (
 
 const SupportIcon = () => (
   <svg
-    className="w-5 h-5"
+    className="w-4.5 h-4.5"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -144,7 +144,7 @@ const SupportIcon = () => (
 
 const FilesIcon = () => (
   <svg
-    className="w-5 h-5"
+    className="w-4.5 h-4.5"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -156,7 +156,7 @@ const FilesIcon = () => (
 
 const LogoutIcon = () => (
   <svg
-    className="w-5 h-5"
+    className="w-4.5 h-4.5"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -170,7 +170,7 @@ const LogoutIcon = () => (
 
 const MenuIcon = () => (
   <svg
-    className="w-5 h-5"
+    className="w-4.5 h-4.5"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -184,7 +184,7 @@ const MenuIcon = () => (
 
 const CloseIcon = () => (
   <svg
-    className="w-5 h-5"
+    className="w-4.5 h-4.5"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -291,9 +291,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
   }, [dispatch]);
 
   const { allTeamMembers } = useSelector((state) => state.auth);
-  useEffect(() => {
-
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <>
@@ -319,7 +317,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
       <aside
         className={`
           fixed md:static top-0 left-0 z-50 
-          w-72 h-screen bg-white border-r border-gray-100 
+          w-66 h-screen bg-white border-r border-gray-100 
           transform transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
           md:transform-none
@@ -327,14 +325,12 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
       >
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-100">
+          <div className="flex items-center justify-between p-4 border-b border-gray-100">
             <Link to="/dashboard" className="flex items-center space-x-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg group-hover:scale-105 transition-transform duration-200">
+              <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg group-hover:scale-105 transition-transform duration-200">
                 ⌘
               </div>
-              <span className="text-xl font-bold text-gray-900">
-                Lancify Flow
-              </span>
+              <span className="text-xl font-bold text-gray-900">Lancify</span>
             </Link>
             <button
               onClick={toggleSidebar}
@@ -345,7 +341,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
             {filteredNavItems.map((item, idx) => {
               const isActive = item.label === active;
               return (
@@ -353,7 +349,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
                   <div
                     onClick={() => handleNavClick(item.label)}
                     className={`
-                      group flex items-center justify-between px-4 py-3 rounded-xl cursor-pointer
+                      group flex items-center justify-between px-2 py-3 rounded-xl cursor-pointer
                       transition-all duration-200 hover:scale-[1.02] hover:shadow-sm
                       ${
                         isActive
@@ -389,32 +385,34 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
           </nav>
 
           {/* Footer with Logout */}
-          <div className="px-4 py-2 sm:py-0 sm:p-4  border-t border-gray-100">
+          <div className="px-1 py-3 border-t border-gray-100 bg-white">
             <Link to={logoutItem.href} className="block">
               <div
                 onClick={() => handleNavClick(logoutItem.label)}
-                className="group flex items-center space-x-3 px-4 py-1 sm:py-3 rounded-xl cursor-pointer text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200 hover:scale-[1.02]"
+                className="group flex items-center space-x-3 px-3 py-2 rounded-xl cursor-pointer text-gray-600 hover:bg-red-50 hover:text-red-600 transition-transform duration-200 hover:scale-105"
               >
-                <div className="p-2 rounded-lg bg-gray-100 text-gray-500 group-hover:bg-red-100 group-hover:text-red-500 transition-all duration-200">
+                <div className="p-2 rounded-lg bg-gray-100 text-gray-500 group-hover:bg-red-100 group-hover:text-red-500 transition-colors duration-200">
                   {logoutItem.icon}
                 </div>
                 <span className="font-medium text-sm">{logoutItem.label}</span>
               </div>
             </Link>
 
-            {/* User Profile Section */}
-            <div className="mt-4 p-3 bg-gray-50 rounded-xl">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+            <div className="mt-3 p-3 bg-gray-50 rounded-xl">
+              <Link
+                to="/dashboard/profile"
+                className="flex items-center space-x-3"
+              >
+                <div className="w-9 h-9 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
                   U
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">User</p>
+                  <p className="text-sm font-semibold text-gray-900">User</p>
                   <p className="text-xs text-gray-500 capitalize">
                     {role} Account
                   </p>
                 </div>
-              </div>
+              </Link>
             </div>
           </div>
         </div>

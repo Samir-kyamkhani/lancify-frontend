@@ -66,7 +66,7 @@ export default function BlogsPage() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: index * 0.1 }}
             viewport={{ once: true }}
-            className="bg-white rounded-3xl shadow-xl overflow-hidden transition transform hover:-translate-y-1 hover:shadow-2xl duration-300"
+            className="bg-white rounded-xl shadow-xl overflow-hidden transition transform hover:-translate-y-1 hover:shadow-2xl duration-300"
           >
             <img
               src={post.coverImg}

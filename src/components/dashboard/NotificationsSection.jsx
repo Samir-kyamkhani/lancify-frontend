@@ -161,7 +161,7 @@ export default function NotificationsSection() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-white border border-gray-200/50 rounded-3xl p-8 shadow-xl"
+        className="bg-white border border-gray-200/50 rounded-xl p-8 shadow-xl"
       >
         <div className="flex items-center justify-between mb-6 flex-col sm:flex-row gap-y-1.5">
           <div className="flex gap-4 items-center">

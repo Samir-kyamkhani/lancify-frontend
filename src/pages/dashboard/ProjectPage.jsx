@@ -92,18 +92,30 @@ export default function ProjectPage() {
       {role === "admin" && (
         <>
           <ProjectOverview />
-          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-8">
-            <HeaderSection
-              title="Task Board"
-              subtitle="Assign the task your teams"
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-8 mb-8">
+            {/* <HeaderSection
+              title=""
+              subtitle=""
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
-              // filterStatus={filterStatus}
-              // setFilterStatus={setFilterStatus}
-              // viewMode={viewMode}
-              // setViewMode={setViewMode}
-            />
-            {filteredTasks.length == 0 ? (
+            /> */}
+
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 px-4 py-6 sm:p-6 lg:p-8 mb-6 sm:mb-8">
+              {/* Header Content */}
+              <div className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-center lg:justify-between">
+                {/* Title */}
+                <div>
+                  <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
+                    Task Board
+                  </h1>
+                  <p className="text-sm sm:text-base text-gray-600">
+                    Assign the task your teams
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {filteredTasks.length === 0 ? (
               <EmptyState
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
@@ -116,13 +128,14 @@ export default function ProjectPage() {
                 clearSearchText="Clear search"
               />
             ) : (
-              <div className="flex gap-6 min-w-full sm:gap-10 flex-col justify-center items-center sm:flex-row sm:justify-start sm:items-start overflow-auto">
+              <div className="flex gap-4 sm:gap-8 overflow-x-auto no-scrollbar px-4 sm:px-0">
                 {filteredTasks.map((col, idx) => (
                   <TaskColumn
                     key={idx}
                     title={col.title}
                     tasks={col.tasks}
                     onAddTask={() => handleAddClick(col.statusKey)}
+                    className="min-w-[280px] sm:min-w-[320px] flex-shrink-0"
                   />
                 ))}
               </div>
@@ -133,6 +146,7 @@ export default function ProjectPage() {
               defaultStatus={currentColumn}
               onSubmit={handleAddTask}
               onClose={() => setShowModal(false)}
+              className="max-w-full sm:max-w-lg"
             />
           )}
         </>

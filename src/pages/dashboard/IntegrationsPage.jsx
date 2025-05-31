@@ -47,7 +47,7 @@ export default function IntegrationsPage() {
   };
 
   return (
-    <div className="">
+    <div className="min-h-screen">
       <div className="mb-6">
         <p className="text-gray-600 mt-1">
           Connect third-party services like payment gateways, CRM, social media,

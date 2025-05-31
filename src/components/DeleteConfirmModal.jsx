@@ -13,7 +13,7 @@ export default function DeleteConfirmModal({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4">
-      <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl">
+      <div className="bg-white rounded-xl w-full max-w-md shadow-2xl">
         <div className="p-8 text-center">
           <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <FaTrash className="w-10 h-10 text-red-600" />

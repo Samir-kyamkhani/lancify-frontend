@@ -1,5 +1,4 @@
 import { FolderKanban, CheckCircle2, Loader2, PauseCircle } from "lucide-react";
-
 import { FaEdit, FaTrash } from "react-icons/fa";
 import AddProjectModal from "./Form/AddProjectModal";
 import { useEffect, useMemo, useState } from "react";
@@ -17,12 +16,9 @@ export default function ProjectOverview() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [projectDelete, setProjectDelete] = useState(null);
-  const [filterStatus, setFilterStatus] = useState("All");
 
   const dispatch = useDispatch();
-  const { projects, loading, error } = useSelector(
-    (state) => state.projectData
-  );
+  const { projects, loading, error } = useSelector((state) => state.projectData);
 
   useEffect(() => {
     dispatch(fetchAllProjects());
@@ -53,10 +49,9 @@ export default function ProjectOverview() {
     return () => clearTimeout(timeout);
   }, [searchTerm, projects]);
 
-  const handleDeleteTeam = (projectId) => {
+  const handleDeleteProject = (projectId) => {
     setProjectDelete(projectId);
     setShowDeleteConfirm(true);
-    setMenuIndex(null);
   };
 
   const confirmDelete = () => {
@@ -73,8 +68,7 @@ export default function ProjectOverview() {
   };
 
   const statsData = useMemo(() => {
-    const count = (status) =>
-      projects.filter((c) => c.status === status).length;
+    const count = (status) => projects.filter((c) => c.status === status).length;
     return {
       total: projects.length,
       completed: count("completed"),
@@ -112,16 +106,12 @@ export default function ProjectOverview() {
 
   return (
     <>
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-8">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-8 mb-8">
         <HeaderSection
           title="Project Overview"
           subtitle="Summary of all your projects"
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
-          // filterStatus={filterStatus}
-          // setFilterStatus={setFilterStatus}
-          // viewMode={viewMode}
-          // setViewMode={setViewMode}
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-8 pt-8 border-t border-gray-100">
           {stats.map((stat, i) => (
@@ -134,7 +124,8 @@ export default function ProjectOverview() {
             />
           ))}
         </div>
-        {filteredProjects?.length == 0 ? (
+
+        {filteredProjects?.length === 0 ? (
           <EmptyState
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
@@ -147,7 +138,7 @@ export default function ProjectOverview() {
             clearSearchText="Clear search"
           />
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
             {filteredProjects?.map((project) => (
               <div
                 key={project.id}
@@ -211,7 +202,7 @@ export default function ProjectOverview() {
                     <FaEdit className="w-5 h-5 text-blue-600" />
                   </button>
                   <button
-                    onClick={() => handleDeleteTeam(project.id)}
+                    onClick={() => handleDeleteProject(project.id)}
                     className="p-2 cursor-pointer rounded-full hover:bg-red-100 transition"
                     aria-label={`Delete project ${project.title}`}
                   >

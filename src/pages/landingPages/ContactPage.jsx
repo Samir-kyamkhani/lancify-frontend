@@ -17,7 +17,7 @@ export default function ContactPage() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="bg-white rounded-3xl shadow-lg p-6 sm:p-8 border border-gray-200 flex items-start gap-4"
+            className="bg-white rounded-xl shadow-lg p-6 sm:p-8 border border-gray-200 flex items-start gap-4"
           >
             <div>
               <FiMail className="text-3xl mt-1 text-blue-600" />
@@ -39,7 +39,7 @@ export default function ContactPage() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             viewport={{ once: true }}
-            className="bg-white rounded-3xl shadow-lg p-6 sm:p-8 border border-gray-200 flex  flex-col gap-4 w-fit"
+            className="bg-white rounded-xl shadow-lg p-6 sm:p-8 border border-gray-200 flex  flex-col gap-4 w-fit"
           >
             <div className="flex justify-evenly text-3xl  gap-2  w">
               <Link to="https://facebook.com" target="_blank">
@@ -69,7 +69,7 @@ export default function ContactPage() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="bg-white rounded-3xl shadow-xl p-6 sm:p-10 border border-gray-200"
+          className="bg-white rounded-xl shadow-xl p-6 sm:p-10 border border-gray-200"
         >
           <h3 className="text-2xl font-bold text-gray-800 mb-6">
             We’d love to help! Let us know how

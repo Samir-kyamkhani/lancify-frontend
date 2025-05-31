@@ -48,7 +48,6 @@ export default function HeaderSection({
         setShowInvoiceModal(true);
         break;
       default:
-        // fallback or do nothing
         break;
     }
   };
@@ -59,21 +58,25 @@ export default function HeaderSection({
   const isProposalRoute = path === "/dashboard/proposals";
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-8">
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"></div>
-      <div className="flex flex-col lg:flex-row xl:items-center lg:justify-between gap-6">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 px-4 py-6 sm:p-6 lg:p-8 mb-6 sm:mb-8">
+      {/* Header Content */}
+      <div className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-center lg:justify-between">
+        {/* Title */}
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{title}</h1>
-          <p className="text-gray-600 text-lg">{subtitle}</p>
+          <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
+            {title}
+          </h1>
+          <p className="text-sm sm:text-base text-gray-600">{subtitle}</p>
         </div>
 
-        <div className="flex flex-col xl:flex-row gap-4 lg:justify-end lg:items-end xl:justify-start xl:items-start">
-          {/* View Toggle */}
+        {/* Actions */}
+        <div className="flex flex-col-reverse sm:flex-col xl:flex-row gap-4 xl:items-center w-full lg:w-auto">
+          {/* View toggle for clients */}
           {isClientsRoute && (
-            <div className="flex bg-gray-100 rounded-2xl p-1 w-full justify-around sm:w-fit xl:w-full">
+            <div className="flex bg-gray-100 rounded-xl p-1 w-full justify-around sm:w-fit">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`px-6 py-3 rounded-xl cursor-pointer text-sm font-medium transition-all flex items-center gap-2 ${
+                className={`px-5 py-2 sm:px-6 sm:py-3 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                   viewMode === "grid"
                     ? "bg-white text-gray-900 shadow-sm"
                     : "text-gray-600 hover:text-gray-900"
@@ -84,7 +87,7 @@ export default function HeaderSection({
               </button>
               <button
                 onClick={() => setViewMode("table")}
-                className={`px-6 py-3 rounded-xl cursor-pointer text-sm font-medium transition-all flex items-center gap-2 ${
+                className={`px-5 py-2 sm:px-6 sm:py-3 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                   viewMode === "table"
                     ? "bg-white text-gray-900 shadow-sm"
                     : "text-gray-600 hover:text-gray-900"
@@ -95,7 +98,8 @@ export default function HeaderSection({
               </button>
             </div>
           )}
-          {/* Search */}
+
+          {/* Search Input */}
           <div className="relative w-full">
             <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
@@ -103,97 +107,80 @@ export default function HeaderSection({
               placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 pr-4 py-3 border border-gray-300 outline-none rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full lg:w-80 bg-gray-50 focus:bg-white transition-colors"
+              className="pl-11 pr-4 py-2.5 sm:py-3 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full bg-gray-50 focus:bg-white transition-all"
             />
           </div>
 
+          {/* Filter Dropdown */}
           {(isInvoiceRoute || isTeamMemberRoute || isProposalRoute) && (
-            <div className="w-full">
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-4 w-full py-3 bg-white/70 shadow-sm cursor-pointer backdrop-blur-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-300"
-              >
-                <option value="All">All Status</option>
-
-                {isInvoiceRoute && (
-                  <>
-                    <option value="Paid">Paid</option>
-                    <option value="Pstarting">Pending</option>
-                    <option value="Overdue">Overdue</option>
-                    <option value="Draft">Draft</option>
-                  </>
-                )}
-
-                {isTeamMemberRoute && (
-                  <>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </>
-                )}
-                {isProposalRoute && (
-                  <>
-                    <option value="draft">Draft</option>
-                    <option value="sent">Sent</option>
-                    <option value="accepted">Accepted</option>
-                    <option value="rejected">Rejected</option>
-                    <option value="expired">Expired</option>
-                  </>
-                )}
-              </select>
-            </div>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="px-4 py-2.5 sm:py-3 text-sm bg-white/70 backdrop-blur-sm shadow-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all w-full"
+            >
+              <option value="All">All Status</option>
+              {isInvoiceRoute && (
+                <>
+                  <option value="Paid">Paid</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Overdue">Overdue</option>
+                  <option value="Draft">Draft</option>
+                </>
+              )}
+              {isTeamMemberRoute && (
+                <>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </>
+              )}
+              {isProposalRoute && (
+                <>
+                  <option value="draft">Draft</option>
+                  <option value="sent">Sent</option>
+                  <option value="accepted">Accepted</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="expired">Expired</option>
+                </>
+              )}
+            </select>
           )}
 
+          {/* Dynamic Add Button */}
           <DynamicButton onClick={handleDynamicButtonClick} />
         </div>
       </div>
+
+      {/* Uncomment if needed */}
       {/* {isClientsRoute && <ImportExportButtons />} */}
+
       {/* Modals */}
       {showClientModal && (
         <AddClientModal
-          onSubmit={(data) => {
-            // console.log("Client added:", data);
-            setShowClientModal(false);
-          }}
+          onSubmit={() => setShowClientModal(false)}
           onClose={() => setShowClientModal(false)}
         />
       )}
-
       {showTeamMemberModal && (
         <AddTeamMemberModal
-          onSubmit={(data) => {
-            // console.log("Team member added:", data);
-            setShowTeamMemberModal(false);
-          }}
+          onSubmit={() => setShowTeamMemberModal(false)}
           onClose={() => setShowTeamMemberModal(false)}
         />
       )}
-
       {showProjectModal && (
         <AddProjectModal
-          onSubmit={(data) => {
-            // console.log("Project added:", data);
-            setShowProjectModal(false);
-          }}
+          onSubmit={() => setShowProjectModal(false)}
           onClose={() => setShowProjectModal(false)}
         />
       )}
-
       {showProposalModal && (
         <AddProposalModal
-          onSubmit={(data) => {
-            // console.log("Proposal added:", data);
-            setShowProposalModal(false);
-          }}
+          onSubmit={() => setShowProposalModal(false)}
           onClose={() => setShowProposalModal(false)}
         />
       )}
-
       {showInvoiceModal && (
         <AddInvoiceModal
-          onSubmit={(data) => {
-            setShowInvoiceModal(false);
-          }}
+          onSubmit={() => setShowInvoiceModal(false)}
           onClose={() => setShowInvoiceModal(false)}
         />
       )}

@@ -11,12 +11,12 @@ export default function Dashboard() {
   const role = getUserRole();
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 py-6 text-black">
+    <div className="min-h-screen w-full bg-gray-50 text-black">
       {role === "user" && <UserDashboardPage />}
 
       {role === "admin" && (
-        <main className="space-y-4 sm:space-x-12 w-full grid grid-cols-1 gap-6 p-4 sm:p-6">
-          <section className="grid grid-cols-1 lg:grid-cols-2 w-full gap-6">
+        <main className="space-y-4 sm:space-x-12  w-full grid grid-cols-1 gap-6">
+          <section className="grid grid-cols-1 lg:grid-cols-2 w-full gap-6 ">
             <StatsSection />
             <NotificationsSection />
           </section>

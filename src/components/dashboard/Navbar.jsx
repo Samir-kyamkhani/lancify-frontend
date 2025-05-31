@@ -54,11 +54,13 @@ export default function Navbar() {
   const pageTitle =
     currentPath === "/dashboard/profile"
       ? "Dashboard"
+      : currentPath === "/"
+      ? "Dashboard"
       : currentPath
           .split("/")
           .filter(Boolean)
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" ") || "Dashboard";
+          .pop()
+          .replace(/^\w/, (c) => c.toUpperCase());
 
   const iconMap = {
     Inbox: <FaInbox className="text-xl text-indigo-600 mr-3" />,
@@ -81,38 +83,38 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-gray-200/60 shadow-sm">
-      <div className="px-4 lg:px-6 py-4">
-        <div className="flex justify-between items-center">
+    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-gray-200/60">
+      <div className="px-4 sm:px-6 lg:px-6 py-2">
+        <div className="flex justify-between items-center flex-wrap sm:flex-nowrap">
           {/* Page Title Section */}
-          <div className="flex items-center">
+          <div className="inline-flex items-center ml-14 mt-2 sm:ml-0 sm:mt-0 flex-shrink-0">
             <Link
               to={
                 currentPath === "/dashboard/profile"
                   ? "/dashboard"
                   : currentPath
               }
-              className="group flex items-center transition-all duration-200 hover:scale-[1.02]"
+              className="group inline-flex items-center transition-all duration-200 hover:scale-[1.02]"
             >
-              <div className="flex ml-12 sm:ml-0 items-center bg-gradient-to-r from-indigo-50 to-blue-50 rounded-md p-2 sm:px-3 lg:px-4 lg:py-2 group-hover:shadow-md transition-all duration-200">
+              <div className="inline-flex ml-0 sm:ml-0 items-center bg-gradient-to-r from-indigo-50 to-blue-50  p-2 sm:px-3 lg:px-4 lg:py-2 group-hover:shadow-md transition-all duration-200  rounded-lg ">
                 {iconMap[pageTitle] || (
                   <FaCube className="lg:text-xl text-sm text-indigo-600 mr-3" />
                 )}
-                <h1 className="text-xs md:text-xl font-semibold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                <h1 className="text-sm inline-block sm:text-md md:text-xl font-semibold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent truncate  ">
                   {pageTitle}
                 </h1>
               </div>
             </Link>
-          
           </div>
 
           {/* Actions Section */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 mt-2 sm:mt-0 flex-shrink-0">
             {/* Notifications */}
             <div className="relative">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 transition-all duration-200 hover:scale-105 group"
+                className="relative p-2 rounded-xl bg-gray-50 hover:bg-gray-100 transition-all duration-200 hover:scale-105 group"
+                aria-label="Notifications"
               >
                 <FaBell
                   size={18}
@@ -127,25 +129,34 @@ export default function Navbar() {
 
               {/* Notifications Dropdown */}
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-50">
+                <div
+                  className={`
+        absolute z-50 right-0 mt-2
+        w-[68vw] sm:w-80 md:w-96
+        bg-white rounded-xl shadow-xl border border-gray-200
+        overflow-hidden
+        sm:right-0
+      `}
+                >
                   <div className="p-4 bg-gradient-to-r from-indigo-50 to-blue-50 border-b border-gray-100">
                     <h3 className="font-semibold text-gray-800 flex items-center">
                       <FaBell className="mr-2 text-indigo-600" />
                       Notifications
                     </h3>
                   </div>
-                  <div className="max-h-64 overflow-y-auto">
+
+                  <div className="max-h-64 overflow-y-auto divide-y divide-gray-100">
                     {notifications.map((notification) => (
                       <div
                         key={notification.id}
-                        className={`p-4 border-b border-gray-50 hover:bg-gray-50 transition-colors duration-150 ${
+                        className={`p-4 hover:bg-gray-50 transition-colors duration-150 ${
                           notification.unread ? "bg-blue-50/50" : ""
                         }`}
                       >
                         <div className="flex items-start justify-between">
-                          <div className="flex-1">
+                          <div className="flex-1 min-w-0">
                             <p
-                              className={`text-sm ${
+                              className={`text-sm truncate ${
                                 notification.unread
                                   ? "font-medium text-gray-900"
                                   : "text-gray-700"
@@ -153,17 +164,18 @@ export default function Navbar() {
                             >
                               {notification.title}
                             </p>
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-gray-500 mt-1 truncate">
                               {notification.time}
                             </p>
                           </div>
                           {notification.unread && (
-                            <div className="w-2 h-2 bg-indigo-500 rounded-full ml-2 mt-1"></div>
+                            <div className="w-2 h-2 bg-indigo-500 rounded-full ml-2 mt-1 flex-shrink-0"></div>
                           )}
                         </div>
                       </div>
                     ))}
                   </div>
+
                   <div className="p-3 bg-gray-50 text-center">
                     <Link
                       to="/inbox"
@@ -182,8 +194,9 @@ export default function Navbar() {
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 className="flex items-center gap-2 p-2 rounded-xl hover:bg-gray-50 transition-all duration-200 group"
+                aria-label="User menu"
               >
-                <div className="relative">
+                <div className="relative flex-shrink-0">
                   {user?.avatarUrl ? (
                     <img
                       ref={avatarRef}
@@ -196,15 +209,14 @@ export default function Navbar() {
                       <CgProfile className="w-5 h-5 text-white" />
                     </div>
                   )}
-                  {/* <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div> */}
                 </div>
 
-                <div className="hidden lg:flex items-center gap-1">
-                  <div className="text-left">
-                    <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors duration-200">
+                {/* Show name only on md+ screens */}
+                <div className="hidden md:flex items-center gap-1 min-w-0">
+                  <div className="text-left truncate">
+                    <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors duration-200 truncate">
                       {user?.name || "User"}
                     </p>
-                    {/* <p className="text-xs text-gray-500">Online</p> */}
                   </div>
                   <FaChevronDown
                     className={`w-3 h-3 text-gray-400 transition-transform duration-200 ${
@@ -214,11 +226,11 @@ export default function Navbar() {
                 </div>
               </button>
 
-              {/* Profile Dropdown */}
+              {/* Dropdown Menu */}
               {showProfileMenu && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-50">
+                <div className="absolute right-0 mt-2 w-64 max-w-[90vw] overflow-hidden bg-white rounded-xl shadow-xl border border-gray-200 z-50">
                   <div className="p-4 bg-gradient-to-r from-indigo-50 to-blue-50 border-b border-gray-100">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 w-fit">
                       {user?.avatarUrl ? (
                         <img
                           src={user.avatarUrl}
@@ -230,11 +242,11 @@ export default function Navbar() {
                           <CgProfile className="w-6 h-6 text-white" />
                         </div>
                       )}
-                      <div>
-                        <p className="font-semibold text-gray-800">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-gray-800 truncate">
                           {user?.name || "User"}
                         </p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 truncate">
                           {user?.email || "user@example.com"}
                         </p>
                       </div>
@@ -244,24 +256,24 @@ export default function Navbar() {
                   <div className="py-2">
                     <Link
                       to="/dashboard/profile"
-                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition-colors duration-150"
                       onClick={() => setShowProfileMenu(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition duration-150"
                     >
                       <FiUser className="w-4 h-4" />
                       View Profile
                     </Link>
                     <Link
                       to="/settings"
-                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition-colors duration-150"
                       onClick={() => setShowProfileMenu(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition duration-150"
                     >
                       <FiSettings className="w-4 h-4" />
                       Settings
                     </Link>
                     <Link
                       to="/support"
-                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition-colors duration-150"
                       onClick={() => setShowProfileMenu(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition duration-150"
                     >
                       <FaQuestionCircle className="w-4 h-4" />
                       Help & Support
@@ -269,7 +281,13 @@ export default function Navbar() {
                   </div>
 
                   <div className="border-t border-gray-100 py-2">
-                    <button className="flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150 w-full text-left">
+                    <button
+                      onClick={() => {
+                        // TODO: Handle logout here
+                        setShowProfileMenu(false);
+                      }}
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition duration-150 w-full text-left"
+                    >
                       <FaSignOutAlt className="w-4 h-4" />
                       Sign Out
                     </button>

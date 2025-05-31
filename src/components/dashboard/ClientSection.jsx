@@ -98,7 +98,7 @@ function ClientSection() {
 
   return (
     <div className="w-full">
-      <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl shadow-black/5 overflow-hidden">
+      <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl shadow-black/5 overflow-hidden">
         <div className="bg-gradient-to-r from-slate-50 to-white p-8 border-b border-slate-100/50">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div className="space-y-3">

@@ -100,7 +100,7 @@ const SignupPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="w-full max-w-md bg-[#FFFFFF] rounded-3xl shadow-2xl px-8 py-10"
+          className="w-full max-w-md bg-[#FFFFFF] rounded-xl shadow-2xl px-8 py-10"
         >
           <h2 className="text-2xl font-bold text-center text-gray-800">
             {isOtpStep ? "Verify OTP" : "Welcome to Lancify"}
