@@ -12,7 +12,7 @@ function TitlesPages() {
   useEffect(() => {
     document.title = `${pageTitle}${
       locationName !== "/" ? " |" : ""
-    } Monochrome`;
+    } Lancify Flow`;
   }, [pageTitle]);
 
   return null;

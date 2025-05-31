@@ -51,7 +51,7 @@ export default function AddTaskModal({
       assignee: taskData.userId || "",
       project: taskData.projectId || "",
     });
-  }, [taskData, defaultStatus]);
+  },[]);
 
   useEffect(() => {
     dispatch(fetchAllTeamMemders());

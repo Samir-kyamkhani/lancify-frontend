@@ -1,31 +1,36 @@
 import { useState } from "react";
-import {
-  FaWallet,
-  FaPaypal,
-  FaStripe,
-  FaRupeeSign,
-} from "react-icons/fa";
-import { SiPhonepe } from "react-icons/si";
-import { FiSettings } from "react-icons/fi";
-import { Listbox } from "@headlessui/react";
-import { balance, methods, transactions } from "../..";
 
+// Mock data
+const balance = 2847.50;
+const transactions = [
+  { id: 1, type: "Earnings", date: "2024-05-29", amount: "125.00" },
+  { id: 2, type: "Withdrawal", date: "2024-05-28", amount: "500.00" },
+  { id: 3, type: "Earnings", date: "2024-05-27", amount: "89.50" },
+  { id: 4, type: "Earnings", date: "2024-05-26", amount: "234.75" },
+];
 
+const methods = [
+  { value: "bank", name: "Bank Transfer", icon: "🏦" },
+  { value: "upi", name: "UPI Payment", icon: "📱" },
+  { value: "paypal", name: "PayPal", icon: "💳" },
+  { value: "stripe", name: "Stripe", icon: "⚡" },
+  { value: "other", name: "Other Method", icon: "⚙️" },
+];
 
 const WalletSection = () => {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [withdrawMethod, setWithdrawMethod] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
- 
-
-  const Field = ({ label, placeholder, Icon, type = "text" }) => (
-    <div>
-      <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-        {Icon && <Icon className="text-gray-500" />} {label}
+  const Field = ({ label, placeholder, icon, type = "text" }) => (
+    <div className="group">
+      <label className="block text-sm font-semibold text-slate-700 mb-2 transition-colors group-focus-within:text-indigo-600">
+        {icon && <span className="mr-2">{icon}</span>}
+        {label}
       </label>
       <input
         type={type}
-        className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-sm"
+        className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white/70 backdrop-blur-sm text-slate-800 placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white hover:bg-white/90"
         placeholder={placeholder}
         required
       />
@@ -34,167 +39,223 @@ const WalletSection = () => {
 
   return (
     <>
-      {/* Wallet Box */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm mb-6 p-5">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-              <FaWallet className="text-blue-600" /> Wallet Balance
-            </h2>
-            <p className="text-2xl font-bold text-green-600 mt-1">
-              ${balance.toFixed(2)}
-            </p>
+      {/* Modern Wallet Card */}
+      <div className="relative">
+        {/* Background gradient blur */}
+        <div className="absolute -inset-1 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl blur opacity-20"></div>
+        
+        <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl border border-white/20 shadow-xl mb-8 p-8 hover:shadow-2xl transition-all duration-500">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <span className="text-white text-xl">💰</span>
+                </div>
+                <h2 className="text-2xl font-bold bg-gradient-to-br from-slate-800 to-slate-600 bg-clip-text text-transparent">
+                  Your Balance
+                </h2>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <p className="text-5xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                  ${balance.toLocaleString()}
+                </p>
+                <span className="text-lg text-slate-500 font-medium">.{(balance % 1).toFixed(2).slice(2)}</span>
+              </div>
+              <p className="text-slate-500 font-medium">Available for withdrawal</p>
+            </div>
+            
+            <button
+              onClick={() => setShowWithdrawModal(true)}
+              className="mt-6 lg:mt-0 group relative px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                <span>💸</span> Request Withdrawal
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </button>
           </div>
-          <button
-            onClick={() => setShowWithdrawModal(true)}
-            className="mt-4 sm:mt-0 bg-blue-600 hover:bg-blue-700 transition text-white text-sm font-medium px-4 py-2 rounded-md"
-          >
-            Request Withdrawal
-          </button>
-        </div>
 
-        {/* Transactions */}
-        <div className="mt-5">
-          <h3 className="text-sm font-semibold text-gray-700 mb-2">
-            Transaction History
-          </h3>
-          <div className="overflow-x-auto rounded-md">
-            <table className="w-full text-sm text-left border border-gray-100">
-              <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
-                <tr>
-                  <th className="px-4 py-3">Type</th>
-                  <th className="px-4 py-3">Date</th>
-                  <th className="px-4 py-3 text-right">Amount</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {transactions.map((tx) => (
-                  <tr key={tx.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-gray-800">{tx.type}</td>
-                    <td className="px-4 py-3 text-gray-600">{tx.date}</td>
-                    <td
-                      className={`px-4 py-3 text-right font-medium ${
-                        tx.type === "Withdrawal"
-                          ? "text-red-500"
-                          : "text-green-600"
-                      }`}
-                    >
-                      {tx.type === "Withdrawal" ? "-" : "+"}${tx.amount}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          {/* Modern Transaction History */}
+          <div className="mt-10">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center">
+                <span className="text-slate-600">📊</span>
+              </div>
+              <h3 className="text-xl font-bold text-slate-800">Recent Transactions</h3>
+            </div>
+            
+            <div className="space-y-3">
+              {transactions.map((tx, index) => (
+                <div
+                  key={tx.id}
+                  className="group flex items-center justify-between p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-slate-100 hover:bg-white/80 hover:shadow-md transition-all duration-300"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      tx.type === "Withdrawal" 
+                        ? "bg-red-50 text-red-600" 
+                        : "bg-emerald-50 text-emerald-600"
+                    }`}>
+                      {tx.type === "Withdrawal" ? "📤" : "📥"}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-slate-800">{tx.type}</p>
+                      <p className="text-sm text-slate-500">{new Date(tx.date).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}</p>
+                    </div>
+                  </div>
+                  <div className={`text-right font-bold text-lg ${
+                    tx.type === "Withdrawal" ? "text-red-500" : "text-emerald-600"
+                  }`}>
+                    {tx.type === "Withdrawal" ? "-" : "+"}${tx.amount}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Withdraw Modal */}
+      {/* Ultra Modern Withdraw Modal */}
       {showWithdrawModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-full mx-4 sm:w-[460px] max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              Request Withdrawal
-            </h3>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                alert("Withdrawal Requested!");
-                setShowWithdrawModal(false);
-              }}
-              className="space-y-4"
-            >
-              {/* Custom Dropdown */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Withdrawal Method
-                </label>
-                <Listbox value={withdrawMethod} onChange={setWithdrawMethod}>
-                  <div className="relative">
-                    <Listbox.Button className="w-full border border-gray-300 rounded-md p-2 text-sm flex items-center justify-between">
-                      {methods.find((m) => m.value === withdrawMethod)?.name ||
-                        "Select Method"}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-md">
-                      {methods.map((method) => (
-                        <Listbox.Option
-                          key={method.value}
-                          value={method.value}
-                          className="p-2 hover:bg-gray-100 flex items-center gap-2 text-sm cursor-pointer"
-                        >
-                          <method.icon className="text-blue-600" />
-                          {method.name}
-                        </Listbox.Option>
-                      ))}
-                    </Listbox.Options>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
+          <div className="relative w-full max-w-md">
+            {/* Modal background with gradient */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl blur opacity-30"></div>
+            
+            <div className="relative bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                    <span className="text-white">💸</span>
                   </div>
-                </Listbox>
-              </div>
-
-              <Field
-                label="Amount"
-                placeholder="Enter amount"
-                Icon={FaRupeeSign}
-                type="number"
-              />
-
-              {/* Conditional Fields */}
-              {withdrawMethod === "bank" && (
-                <>
-                  <Field label="Account Holder Name" placeholder="e.g. Rahul Sharma" />
-                  <Field label="Bank Name" placeholder="e.g. HDFC Bank" />
-                  <Field label="Account Number" placeholder="e.g. 1234567890" />
-                  <Field label="IFSC Code" placeholder="e.g. HDFC0001234" />
-                </>
-              )}
-
-              {withdrawMethod === "upi" && (
-                <Field label="UPI ID" placeholder="e.g. yourname@upi" Icon={SiPhonepe} />
-              )}
-
-              {withdrawMethod === "paypal" && (
-                <Field label="PayPal Email" placeholder="e.g. you@example.com" Icon={FaPaypal} />
-              )}
-
-              {withdrawMethod === "stripe" && (
-                <Field
-                  label="Stripe Account ID / Email"
-                  placeholder="e.g. acct_1K..."
-                  Icon={FaStripe}
-                />
-              )}
-
-              {withdrawMethod === "other" && (
-                <div>
-                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                    <FiSettings /> Enter Details
-                  </label>
-                  <textarea
-                    className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-sm"
-                    placeholder="Provide details for your preferred withdrawal method"
-                    rows={3}
-                    required
-                  />
+                  <h3 className="text-2xl font-bold text-slate-800">Withdraw Funds</h3>
                 </div>
-              )}
-
-              <div className="flex justify-end gap-3 pt-2">
                 <button
-                  type="button"
                   onClick={() => setShowWithdrawModal(false)}
-                  className="text-gray-600 text-sm"
+                  className="w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-xl flex items-center justify-center transition-colors duration-200"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-600 text-white px-4 py-2 text-sm font-medium rounded-md hover:bg-blue-700 transition"
-                >
-                  Withdraw
+                  <span className="text-slate-600">✕</span>
                 </button>
               </div>
-            </form>
+
+              <div className="space-y-6">
+                {/* Custom Modern Dropdown */}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    💳 Withdrawal Method
+                  </label>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border border-slate-200 rounded-xl text-left flex items-center justify-between transition-all duration-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                    >
+                      <span className="flex items-center gap-2">
+                        {methods.find((m) => m.value === withdrawMethod)?.icon || "🔽"}
+                        {methods.find((m) => m.value === withdrawMethod)?.name || "Select withdrawal method"}
+                      </span>
+                      <span className={`transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}>
+                        ▼
+                      </span>
+                    </button>
+                    
+                    {isDropdownOpen && (
+                      <div className="absolute z-20 w-full mt-2 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-xl shadow-xl overflow-hidden">
+                        {methods.map((method) => (
+                          <button
+                            key={method.value}
+                            type="button"
+                            onClick={() => {
+                              setWithdrawMethod(method.value);
+                              setIsDropdownOpen(false);
+                            }}
+                            className="w-full px-4 py-3 text-left hover:bg-indigo-50 flex items-center gap-3 transition-colors duration-200 border-b border-slate-100 last:border-b-0"
+                          >
+                            <span className="text-lg">{method.icon}</span>
+                            <span className="font-medium text-slate-800">{method.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <Field
+                  label="Amount"
+                  placeholder="Enter withdrawal amount"
+                  icon="💰"
+                  type="number"
+                />
+
+                {/* Conditional Fields with Modern Styling */}
+                {withdrawMethod === "bank" && (
+                  <div className="space-y-4 p-4 bg-slate-50/80 rounded-xl">
+                    <p className="text-sm font-semibold text-slate-600 mb-3">🏦 Bank Details</p>
+                    <Field label="Account Holder Name" placeholder="e.g. Rahul Sharma" icon="👤" />
+                    <Field label="Bank Name" placeholder="e.g. HDFC Bank" icon="🏦" />
+                    <Field label="Account Number" placeholder="e.g. 1234567890" icon="🔢" />
+                    <Field label="IFSC Code" placeholder="e.g. HDFC0001234" icon="🔤" />
+                  </div>
+                )}
+
+                {withdrawMethod === "upi" && (
+                  <div className="p-4 bg-slate-50/80 rounded-xl">
+                    <Field label="UPI ID" placeholder="e.g. yourname@upi" icon="📱" />
+                  </div>
+                )}
+
+                {withdrawMethod === "paypal" && (
+                  <div className="p-4 bg-slate-50/80 rounded-xl">
+                    <Field label="PayPal Email" placeholder="e.g. you@example.com" icon="💳" />
+                  </div>
+                )}
+
+                {withdrawMethod === "stripe" && (
+                  <div className="p-4 bg-slate-50/80 rounded-xl">
+                    <Field label="Stripe Account ID" placeholder="e.g. acct_1K..." icon="⚡" />
+                  </div>
+                )}
+
+                {withdrawMethod === "other" && (
+                  <div className="p-4 bg-slate-50/80 rounded-xl">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      ⚙️ Custom Details
+                    </label>
+                    <textarea
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white/70 backdrop-blur-sm text-slate-800 placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white resize-none"
+                      placeholder="Provide details for your preferred withdrawal method"
+                      rows={4}
+                      required
+                    />
+                  </div>
+                )}
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowWithdrawModal(false)}
+                    className="flex-1 px-6 py-3 text-slate-600 font-semibold rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors duration-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    onClick={() => {
+                      alert("Withdrawal request submitted successfully! 🎉");
+                      setShowWithdrawModal(false);
+                    }}
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                  >
+                    Submit Request
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

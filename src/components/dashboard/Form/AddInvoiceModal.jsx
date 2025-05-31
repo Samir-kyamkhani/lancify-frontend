@@ -43,39 +43,39 @@ export default function AddInvoiceModal({
 
   const [form, setForm] = useState({
     invid:
-      invoiceData.invid || `INV-${Math.floor(10000 + Math.random() * 90000)}`,
+      invoiceData?.invid || `INV-${Math.floor(10000 + Math.random() * 90000)}`,
     client: null,
     project: null,
     clientAddress: "",
-    amount: parseFloat(invoiceData.amount) || "",
-    discount: parseFloat(invoiceData.discount) || "",
+    amount: parseFloat(invoiceData?.amount) || "",
+    discount: parseFloat(invoiceData?.discount) || "",
     issueDate:
-      invoiceData.issueDate?.slice(0, 10) ||
+      invoiceData?.issueDate?.slice(0, 10) ||
       new Date().toISOString().slice(0, 10),
-    dueDate: invoiceData.dueDate?.slice(0, 10) || "",
-    notes: invoiceData.notes || "",
-    paymentGateway: invoiceData.paymentGateway || "",
+    dueDate: invoiceData?.dueDate?.slice(0, 10) || "",
+    notes: invoiceData?.notes || "",
+    paymentGateway: invoiceData?.paymentGateway || "",
   });
 
   // Sync default client/project from invoiceData after data loads
   useEffect(() => {
-    if (clients.length && invoiceData.clientId) {
+    if (clients.length && invoiceData?.clientId) {
       const defaultClient = clientOptions.find(
-        (c) => String(c.value) === String(invoiceData.clientId)
+        (c) => String(c.value) === String(invoiceData?.clientId)
       );
       if (defaultClient) {
         setForm((prev) => ({
           ...prev,
           client: defaultClient,
-          clientAddress: defaultClient.address,
+          clientAddress: defaultClient?.address,
         }));
         setShowClientSelect(false);
       }
     }
 
-    if (projects.length && invoiceData.projectId) {
+    if (projects.length && invoiceData?.projectId) {
       const defaultProject = projectOptions.find(
-        (p) => String(p.value) === String(invoiceData.projectId)
+        (p) => String(p.value) === String(invoiceData?.projectId)
       );
       if (defaultProject) {
         setForm((prev) => ({

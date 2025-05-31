@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./components/dashboard/Sidebar";
 import Navbar from "./components/dashboard/Navbar";
 import TitlesPages from "./components/dashboard/TitlesPages";
@@ -30,13 +30,17 @@ export default function DashboardLayout() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const { pathname } = useLocation();
+  const isChatOrInbox =
+    pathname === "/dashboard/inbox" || pathname === "/dashboard/chat" || pathname === '/dashboard/profile'
+
   return (
-    <div className="flex flex-col md:flex-row h-screen w-full overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen w-full">
       <TitlesPages />
       <Sidebar
         isOpen={isOpen}
         toggleSidebar={() => setIsOpen(!isOpen)}
-        className={`fixed z-40 md:static transition-transform duration-300 ${
+        className={`fixed z-40 md:static transition-transform duration-300 overflow-auto ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 md:block`}
       />
@@ -50,9 +54,13 @@ export default function DashboardLayout() {
       )}
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col transition-all duration-300 overflow-hidden">
+      <div className="flex-1 flex flex-col transition-all duration-300">
         <Navbar />
-        <main className="flex-1 overflow-auto p-4 bg-gray-50">
+        <main
+          className={`bg-gradient-to-br from-gray-50 to-gray-100 overflow-auto ${
+            isChatOrInbox ? "p-0" : "p-6 "
+          } `}
+        >
           <Outlet />
         </main>
       </div>

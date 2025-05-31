@@ -10,7 +10,7 @@ function TitlesPages() {
     .join(" ");
 
   useEffect(() => {
-    document.title = `${pageTitle}${locationName !== "/" ? " |" : ""} Monochrome`;
+    document.title = `${pageTitle}${locationName !== "/" ? " |" : ""} Lancify Flow`;
   }, [pageTitle]);
 
   return null;

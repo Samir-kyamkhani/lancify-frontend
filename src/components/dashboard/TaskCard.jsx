@@ -1,25 +1,35 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import AddTaskModal from "./Form/AddTaskModal";
 import { priorityStyles } from "../..";
+import { deleteTask } from "../../slices/taskSlice";
+import DeleteConfirmModal from "../DeleteConfirmModal";
+import { useDispatch } from "react-redux";
 
-export default function TaskCard({ data, onDelete }) {
+export default function TaskCard({ data }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [editTaskModal, setEditTaskModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [taskDelete, setTaskDelete] = useState(false);
 
+  const dispatch = useDispatch();
   const handleEditClient = () => {
     setEditTaskModal(true);
     setMenuOpen(false);
   };
 
-  const confirmDeleteClient = () => {
-    if (onDelete) {
-      onDelete(data.id);
+  const handleDeleteTeam = (taskId) => {
+    setTaskDelete(taskId);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    if (taskDelete) {
+      dispatch(deleteTask(taskDelete));
+      setShowDeleteConfirm(false);
+      setTaskDelete(null);
     }
-    setShowDeleteConfirm(false);
-    setMenuOpen(false);
   };
 
   return (
@@ -46,7 +56,7 @@ export default function TaskCard({ data, onDelete }) {
             </li>
             <li
               onClick={() => {
-                setShowDeleteConfirm(true);
+                handleDeleteTeam(data.id);
                 setMenuOpen(false);
               }}
               className="flex items-center px-4 py-2 hover:bg-red-50 text-red-600 cursor-pointer"
@@ -81,29 +91,11 @@ export default function TaskCard({ data, onDelete }) {
       )}
 
       {showDeleteConfirm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 px-6">
-          <div className="bg-white p-6 rounded-xl w-full max-w-sm shadow-lg">
-            <h2 className="text-lg font-semibold mb-4">Confirm Deletion</h2>
-            <p className="text-gray-700 mb-6">
-              Are you sure you want to delete this task? This action cannot be
-              undone.
-            </p>
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 bg-gray-300 rounded-md cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmDeleteClient}
-                className="px-4 py-2 bg-red-600 text-white rounded-md cursor-pointer"
-              >
-                Yes, Delete
-              </button>
-            </div>
-          </div>
-        </div>
+        <DeleteConfirmModal
+          show={showDeleteConfirm}
+          setShow={setShowDeleteConfirm}
+          onConfirm={confirmDelete}
+        />
       )}
     </div>
   );

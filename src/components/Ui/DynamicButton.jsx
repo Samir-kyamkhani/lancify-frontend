@@ -11,7 +11,7 @@ export default function DynamicButton({ onClick }) {
     "/dashboard/clients": "Add Client",
     "/dashboard/proposals": "Add Proposal",
     "/dashboard/projects": "Add Project",
-    "/dashboard/payments": "Create Invoice",
+    "/dashboard/payments": "Add Invoice",
     "/dashboard/teams": "Add Team",
     "/dashboard/social-media-management": "Schedule Post",
   };
@@ -21,7 +21,7 @@ export default function DynamicButton({ onClick }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer"
+      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium px-4 cursor-pointer rounded-xl transition-all duration-300 shadow-lg shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 py-3"
     >
       <FaPlus /> {label}
     </button>

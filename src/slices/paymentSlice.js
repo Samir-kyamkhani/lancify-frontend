@@ -114,8 +114,6 @@ export const editInvoice = (updatedData) => async (dispatch) => {
 };
 
 export const deleteInvoice = (id) => async (dispatch) => {
-    console.log(id);
-    
   dispatch(requestStart());
   try {
     const { data } = await axios.delete(

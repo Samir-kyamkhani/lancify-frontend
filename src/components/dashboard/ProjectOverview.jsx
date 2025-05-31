@@ -1,16 +1,23 @@
+import { FolderKanban, CheckCircle2, Loader2, PauseCircle } from "lucide-react";
+
 import { FaEdit, FaTrash } from "react-icons/fa";
 import AddProjectModal from "./Form/AddProjectModal";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { projectStatusStyles } from "../../index.js";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllProjects, deleteProject } from "../../slices/projectSlice";
+import { StatsCard } from "./StatsCard.jsx";
+import HeaderSection from "./HeaderSection.jsx";
+import EmptyState from "../../pages/dashboard/EmptyState.jsx";
+import DeleteConfirmModal from "../DeleteConfirmModal.jsx";
 
 export default function ProjectOverview() {
   const [editProjectModal, setEditProjectModal] = useState(null);
   const [showProjectModal, setShowProjectModal] = useState(false);
-
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [projectToDelete, setProjectToDelete] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [projectDelete, setProjectDelete] = useState(null);
+  const [filterStatus, setFilterStatus] = useState("All");
 
   const dispatch = useDispatch();
   const { projects, loading, error } = useSelector(
@@ -26,18 +33,37 @@ export default function ProjectOverview() {
     setShowProjectModal(true);
   };
 
-  const handleDeleteProject = (projectId) => {
-    setProjectToDelete(projectId);
+  const [filteredProjects, setFilteredProjects] = useState([]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const normalizedSearch = String(searchTerm || "").toLowerCase();
+
+      const filtered = projects.filter((project) => {
+        const matchesSearch =
+          project.title?.toLowerCase().includes(normalizedSearch) ||
+          project.status?.toLowerCase().includes(normalizedSearch);
+
+        return matchesSearch;
+      });
+
+      setFilteredProjects(filtered);
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [searchTerm, projects]);
+
+  const handleDeleteTeam = (projectId) => {
+    setProjectDelete(projectId);
     setShowDeleteConfirm(true);
+    setMenuIndex(null);
   };
 
-  const confirmDeleteProject = async () => {
-    try {
-      await dispatch(deleteProject(projectToDelete));
+  const confirmDelete = () => {
+    if (projectDelete) {
+      dispatch(deleteProject(projectDelete));
       setShowDeleteConfirm(false);
-      setProjectToDelete(null);
-    } catch (error) {
-      console.error("Failed to delete project:", error);
+      setProjectDelete(null);
     }
   };
 
@@ -46,105 +72,165 @@ export default function ProjectOverview() {
     setEditProjectModal(null);
   };
 
+  const statsData = useMemo(() => {
+    const count = (status) =>
+      projects.filter((c) => c.status === status).length;
+    return {
+      total: projects.length,
+      completed: count("completed"),
+      inProgress: count("in_progress"),
+      not_started: count("not_started"),
+    };
+  }, [projects]);
+
+  const stats = [
+    {
+      title: "Total Projects",
+      value: statsData.total,
+      color: "text-blue-600",
+      icon: FolderKanban,
+    },
+    {
+      title: "Completed",
+      value: statsData.completed,
+      color: "text-green-600",
+      icon: CheckCircle2,
+    },
+    {
+      title: "In Progress",
+      value: statsData.inProgress,
+      color: "text-orange-600",
+      icon: Loader2,
+    },
+    {
+      title: "Not Started",
+      value: statsData.not_started,
+      color: "text-purple-600",
+      icon: PauseCircle,
+    },
+  ];
+
   return (
-    <div className="p-4 sm:p-6 bg-white text-black rounded-md shadow-md max-w-7xl mx-auto">
-      <h2 className="text-2xl font-bold mb-1">Project Overview</h2>
-      <p className="text-gray-600 mb-4">Summary of all your projects.</p>
-
-      {loading && (
-        <p className="text-center text-gray-500">Loading projects...</p>
-      )}
-
-      {error && (
-        <p className="text-center text-red-500">
-          Error loading projects: {error}
-        </p>
-      )}
-
-      {!loading && projects?.length === 0 && (
-        <p className="text-center text-gray-500">No projects found.</p>
-      )}
-
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {projects?.map((project) => (
-          <div
-            key={project.id}
-            className="border border-gray-200 rounded-lg p-4 shadow-sm bg-white flex flex-col justify-between"
-          >
-            <div>
-              <h3 className="text-lg font-semibold">{project.title}</h3>
-              <p className="text-sm text-gray-500">
-                Client: {project.client?.name}
-              </p>
-
-              {/* Status with priority style */}
-              <span
-                className={`inline-block mt-2 mr-2 px-3 py-1 rounded-full text-sm font-medium ${
-                  projectStatusStyles[project.status] ||
-                  "bg-gray-200 text-gray-700"
-                }`}
+    <>
+      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-8">
+        <HeaderSection
+          title="Project Overview"
+          subtitle="Summary of all your projects"
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          // filterStatus={filterStatus}
+          // setFilterStatus={setFilterStatus}
+          // viewMode={viewMode}
+          // setViewMode={setViewMode}
+        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-8 pt-8 border-t border-gray-100">
+          {stats.map((stat, i) => (
+            <StatsCard
+              key={i}
+              title={stat.title}
+              value={stat.value}
+              color={stat.color}
+              icon={stat.icon}
+            />
+          ))}
+        </div>
+        {filteredProjects?.length == 0 ? (
+          <EmptyState
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            setShowClientModal={setShowProjectModal}
+            noClientsTitle="No project yet"
+            noClientsMessage="Get started by adding your first project."
+            noMatchTitle="No project found"
+            noMatchMessage="No project match your search criteria. Try adjusting your search."
+            addClientButtonText="Add Your First Project"
+            clearSearchText="Clear search"
+          />
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+            {filteredProjects?.map((project) => (
+              <div
+                key={project.id}
+                className="bg-gray-50/5 backdrop-blur-lg rounded-2xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition-all duration-300 flex flex-col justify-between space-y-4"
               >
-                {(project.status === "in_progress" && "In Progress") ||
-                  (project.status === "not_started" && "Not Started") ||
-                  (project.status === "cancelled" && "Cancelled") ||
-                  (project.status === "completed" && "Completed") ||
-                  "Unknown Status"}
-              </span>
+                {/* Header */}
+                <div className="flex flex-col lg:flex-row gap-y-3.5 lg:gap-y-0 justify-between items-start">
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-800">
+                      {project.title}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      Client: {project.client?.name}
+                    </p>
+                  </div>
 
-              <p className="mt-3 text-sm">{project.description}</p>
-            </div>
+                  {/* Status Badge */}
+                  <span
+                    className={`lg:ml-auto px-3 py-1 rounded-full text-xs font-medium capitalize ${
+                      projectStatusStyles[project.status] ||
+                      "bg-gray-200 text-gray-700"
+                    }`}
+                  >
+                    {(project.status === "in_progress" && "In Progress") ||
+                      (project.status === "not_started" && "Not Started") ||
+                      (project.status === "cancelled" && "Cancelled") ||
+                      (project.status === "completed" && "Completed") ||
+                      "Unknown"}
+                  </span>
+                </div>
 
-            {project.start && project.end && (
-              <p className="mt-3 text-xs text-gray-500">
-                Start: {project.start} | End: {project.end}
-              </p>
-            )}
+                {/* Description */}
+                <p className="text-sm text-gray-600">{project.description}</p>
 
-            <div className="flex justify-end space-x-3 mt-4">
-              <button
-                aria-label={`Edit project ${project.title}`}
-                onClick={() => handleEditProject(project)}
-                className="focus:outline-none cursor-pointer"
-              >
-                <FaEdit className="w-4 h-4 text-blue-600 hover:scale-110 transition" />
-              </button>
-              <button
-                aria-label={`Delete project ${project.title}`}
-                onClick={() => handleDeleteProject(project.id)}
-                className="focus:outline-none cursor-pointer"
-              >
-                <FaTrash className="w-4 h-4 text-red-500 hover:scale-110 transition" />
-              </button>
-            </div>
+                {/* Dates */}
+                {project.startDate && project.endDate && (
+                  <p className="text-xs text-gray-400">
+                    <span className="font-medium text-gray-500">Start:</span>{" "}
+                    {new Date(project.startDate).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}{" "}
+                    &nbsp;|&nbsp;
+                    <span className="font-medium text-gray-500">End:</span>{" "}
+                    {new Date(project.endDate).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </p>
+                )}
+
+                {/* Actions */}
+                <div className="flex justify-end gap-3 pt-2">
+                  <button
+                    onClick={() => handleEditProject(project)}
+                    className="p-2 cursor-pointer rounded-full hover:bg-blue-100 transition"
+                    aria-label={`Edit project ${project.title}`}
+                  >
+                    <FaEdit className="w-5 h-5 text-blue-600" />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteTeam(project.id)}
+                    className="p-2 cursor-pointer rounded-full hover:bg-red-100 transition"
+                    aria-label={`Delete project ${project.title}`}
+                  >
+                    <FaTrash className="w-5 h-5 text-red-500" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
 
       {/* Confirm Delete Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white p-6 rounded-xl w-full max-w-sm shadow-lg">
-            <h2 className="text-lg font-semibold mb-4">Confirm Deletion</h2>
-            <p className="text-gray-700 mb-6">
-              Are you sure you want to delete this project? This action cannot
-              be undone.
-            </p>
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 bg-gray-300 rounded-md cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmDeleteProject}
-                className="px-4 py-2 bg-red-600 text-white rounded-md cursor-pointer"
-              >
-                Yes, Delete
-              </button>
-            </div>
-          </div>
-        </div>
+        <DeleteConfirmModal
+          show={showDeleteConfirm}
+          setShow={setShowDeleteConfirm}
+          onConfirm={confirmDelete}
+        />
       )}
 
       {/* Add/Edit Project Modal */}
@@ -159,6 +245,6 @@ export default function ProjectOverview() {
           onClose={closeModal}
         />
       )}
-    </div>
+    </>
   );
 }

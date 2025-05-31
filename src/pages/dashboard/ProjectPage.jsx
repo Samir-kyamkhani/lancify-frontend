@@ -8,6 +8,7 @@ import { getUserRole } from "../../settings";
 import UserProjectPage from "../clientDashboard/UserProjectPage";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllTasks } from "../../slices/taskSlice";
+import EmptyState from "./EmptyState";
 
 function formatTitle(status) {
   return status
@@ -25,11 +26,36 @@ export default function ProjectPage() {
 
   const { tasks = [] } = useSelector((state) => state.taskData);
   const [columns, setColumns] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredTasks, setFilteredTasks] = useState([]);
 
   // Fetch all tasks on mount
   useEffect(() => {
     dispatch(fetchAllTasks());
   }, [dispatch]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const normalizedSearch = String(searchTerm || "").toLowerCase();
+
+      const filtered = columns.filter((project) => {
+        const matchesSearch =
+          project.title?.toLowerCase().includes(normalizedSearch) ||
+          project.tasks?.some(
+            (task) =>
+              task.status?.toLowerCase().includes(normalizedSearch) ||
+              task.user?.name?.toLowerCase().includes(normalizedSearch) ||
+              task.project?.title?.toLowerCase().includes(normalizedSearch)
+          );
+
+        return matchesSearch;
+      });
+
+      setFilteredTasks(filtered);
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [searchTerm, columns]);
 
   useEffect(() => {
     const uniqueStatuses = [
@@ -62,37 +88,46 @@ export default function ProjectPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <>
       {role === "admin" && (
         <>
-          <HeaderSection />
           <ProjectOverview />
-
-          <div className="bg-white py-6 px-4 rounded-lg shadow overflow-x-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">
-                Task Board
-              </h2>
-              <button
-                onClick={() => handleAddClick("todo")}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-              >
-                <BsPlus /> Add Task
-              </button>
-            </div>
-
-            <div className="flex gap-6 min-w-full sm:gap-10 flex-col justify-center items-center sm:flex-row sm:justify-start sm:items-start">
-              {columns.map((col, idx) => (
-                <TaskColumn
-                  key={idx}
-                  title={col.title}
-                  tasks={col.tasks}
-                  onAddTask={() => handleAddClick(col.statusKey)}
-                />
-              ))}
-            </div>
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-8">
+            <HeaderSection
+              title="Task Board"
+              subtitle="Assign the task your teams"
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              // filterStatus={filterStatus}
+              // setFilterStatus={setFilterStatus}
+              // viewMode={viewMode}
+              // setViewMode={setViewMode}
+            />
+            {filteredTasks.length == 0 ? (
+              <EmptyState
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                setShowClientModal={setShowModal}
+                noClientsTitle="No tasks yet"
+                noClientsMessage="Get started by adding your first tasks."
+                noMatchTitle="No project found"
+                noMatchMessage="No tasks match your search criteria. Try adjusting your search."
+                addClientButtonText="Add Your First Task"
+                clearSearchText="Clear search"
+              />
+            ) : (
+              <div className="flex gap-6 min-w-full sm:gap-10 flex-col justify-center items-center sm:flex-row sm:justify-start sm:items-start overflow-auto">
+                {filteredTasks.map((col, idx) => (
+                  <TaskColumn
+                    key={idx}
+                    title={col.title}
+                    tasks={col.tasks}
+                    onAddTask={() => handleAddClick(col.statusKey)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-
           {showModal && (
             <AddTaskModal
               defaultStatus={currentColumn}
@@ -103,6 +138,6 @@ export default function ProjectPage() {
         </>
       )}
       {role === "user" && <UserProjectPage />}
-    </div>
+    </>
   );
 }

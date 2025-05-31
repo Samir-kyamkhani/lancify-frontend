@@ -698,9 +698,10 @@ export const iconMap = {
 
 // Priority styles
 export const priorityStyles = {
-  Low: "bg-green-100 text-green-700",
-  Medium: "bg-yellow-100 text-yellow-800",
-  High: "bg-red-100 text-red-700",
+  high: "bg-green-100 text-green-700",
+  medium: "bg-yellow-100 text-yellow-800",
+  critical: "bg-orange-100 text-orange-700",
+  low: "bg-red-200 text-red-800",
 };
 export const projectStatusStyles = {
   in_progress: "bg-red-100 text-red-700",

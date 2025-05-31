@@ -8,16 +8,17 @@ import UserDashboardPage from "../clientDashboard/UserDashboardPage";
 import { getUserRole } from "../../settings";
 
 export default function Dashboard() {
-  const role = getUserRole(); // Change this dynamically based on logged-in user
+  const role = getUserRole();
 
   return (
     <div className="min-h-screen w-full bg-gray-50 py-6 text-black">
       {role === "user" && <UserDashboardPage />}
 
       {role === "admin" && (
-        <main className="space-y-4 sm:space-x-12 w-full grid grid-cols-1 gap-6">
-          <section className="grid grid-cols-1 w-full gap-6">
+        <main className="space-y-4 sm:space-x-12 w-full grid grid-cols-1 gap-6 p-4 sm:p-6">
+          <section className="grid grid-cols-1 lg:grid-cols-2 w-full gap-6">
             <StatsSection />
+            <NotificationsSection />
           </section>
           <section className="grid grid-cols-1 w-full gap-6">
             <AnalyticsSection />
@@ -25,13 +26,8 @@ export default function Dashboard() {
           <section className="w-full">
             <ClientSection />
           </section>
-          <section className="w-full grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <div className="xl:col-span-2">
-              <ProjectsCard />
-            </div>
-            <div className="xl:col-span-1">
-              <NotificationsSection />
-            </div>
+          <section className="w-full">
+            <ProjectsCard />
           </section>
         </main>
       )}

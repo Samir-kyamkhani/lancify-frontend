@@ -185,6 +185,17 @@ export const logoutUser = () => (dispatch) => {
   dispatch(logout());
 };
 
+export const fetchAllTeamMemders = () => async (dispatch) => {
+  dispatch(authRequest());
+  try {
+    const { data } = await axios.get(`${baseURL}/auth/get-all-members`);
+    dispatch(setAllTeamMembers(data.data));
+    dispatch(messageOnlySuccess(data.message));
+  } catch (err) {
+    dispatch(authFail(handleError(err)));
+  }
+};
+
 export const addTeamMember = (teamMemberData) => async (dispatch) => {
   dispatch(authRequest());
   try {
@@ -193,17 +204,7 @@ export const addTeamMember = (teamMemberData) => async (dispatch) => {
       teamMemberData
     );
     dispatch(messageOnlySuccess(data.message));
-  } catch (err) {
-    dispatch(authFail(handleError(err)));
-  }
-};
-
-export const fetchAllTeamMemders = () => async (dispatch) => {
-  dispatch(authRequest());
-  try {
-    const { data } = await axios.get(`${baseURL}/auth/get-all-members`);
-    dispatch(setAllTeamMembers(data.data));
-    dispatch(messageOnlySuccess(data.message));
+    dispatch(fetchAllTeamMemders());
   } catch (err) {
     dispatch(authFail(handleError(err)));
   }
@@ -217,6 +218,7 @@ export const editTeamMember = (editTeamMemberData) => async (dispatch) => {
       editTeamMemberData
     );
     dispatch(messageOnlySuccess(data.message));
+    dispatch(fetchAllTeamMemders());
   } catch (err) {
     dispatch(authFail(handleError(err)));
   }
@@ -226,6 +228,7 @@ export const deleteTeamMemders = (id) => async (dispatch) => {
   try {
     const { data } = await axios.delete(`${baseURL}/auth/delete-member/${id}`);
     dispatch(messageOnlySuccess(data.message));
+    dispatch(fetchAllTeamMemders());
   } catch (err) {
     dispatch(authFail(handleError(err)));
   }

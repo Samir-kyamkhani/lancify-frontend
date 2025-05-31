@@ -1,9 +1,6 @@
 import TaskCard from "./TaskCard";
-import { deleteTask } from "../../slices/taskSlice";
-import { useDispatch } from "react-redux";
 
 export default function TaskColumn({ title, tasks = [] }) {
-  const dispatch = useDispatch();
   return (
     <div className="flex flex-col h-fit shadow-sm bg-gray-50 rounded-xl p-4 w-full min-w-[280px] max-w-xs">
       <div className="flex justify-between items-center mb-4">
@@ -16,7 +13,6 @@ export default function TaskColumn({ title, tasks = [] }) {
             <TaskCard
               key={idx}
               data={task}
-              onDelete={(id) => dispatch(deleteTask(id))}
             />
           ))
         ) : (

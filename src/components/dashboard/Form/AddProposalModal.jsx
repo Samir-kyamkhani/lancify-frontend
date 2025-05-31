@@ -57,24 +57,24 @@ export default function AddProposalModal({
 
   const initialClient =
     clientOptions.find(
-      (c) => c.value.toString() === (proposalData.clientId || "").toString()
+      (c) => c.value.toString() === (proposalData?.clientId || "").toString()
     ) || null;
 
   const [form, setForm] = useState({
-    clientId: proposalData.clientId || "",
+    clientId: proposalData?.clientId || "",
     client: initialClient,
-    projectName: proposalData.projectName || "",
-    amount: proposalData.amount || "",
-    date: proposalData.date ? proposalData.date.slice(0, 10) : "",
-    status: proposalData.status || "accepted",
-    clientNeeds: proposalData.clientNeeds || "",
-    proposedServices: proposalData.proposedServices || "",
-    agency: proposalData.agency || "",
-    expertise: Array.isArray(proposalData.expertise)
-      ? proposalData.expertise.join(", ")
-      : proposalData.tags?.map((tag) => tag.name).join(", ") || "",
-    tone: proposalData.tone || "formal",
-    generatedProposal: proposalData.generatedProposal || "",
+    projectName: proposalData?.projectName || "",
+    amount: proposalData?.amount || "",
+    date: proposalData?.date ? proposalData?.date.slice(0, 10) : "",
+    status: proposalData?.status || "accepted",
+    clientNeeds: proposalData?.clientNeeds || "",
+    proposedServices: proposalData?.proposedServices || "",
+    agency: proposalData?.agency || "",
+    expertise: Array.isArray(proposalData?.expertise)
+      ? proposalData?.expertise.join(", ")
+      : proposalData?.tags?.map((tag) => tag.name).join(", ") || "",
+    tone: proposalData?.tone || "formal",
+    generatedProposal: proposalData?.generatedProposal || "",
   });
 
   const [error, setError] = useState("");
@@ -146,18 +146,18 @@ export default function AddProposalModal({
     }
 
     const prompt = `Write a clear and professional service proposal based on the details below.
-Client Name: ${form.client.label}
-Project Name: ${form.projectName}
-Client Needs: ${form.clientNeeds}
-Tone: ${form.tone}
-Expertise: ${form.expertise}
+    Client Name: ${form.client.label}
+    Project Name: ${form.projectName}
+    Client Needs: ${form.clientNeeds}
+    Tone: ${form.tone}
+    Expertise: ${form.expertise}
 
-Conclude the proposal exactly with:
+    Conclude the proposal exactly with:
 
-[Your Name]
-[Your Position]
-[Your Email Address]
-[Your Phone Number]`;
+    [Your Name]
+    [Your Position]
+    [Your Email Address]
+    [Your Phone Number]`;
 
     setLoading(true);
     setError("");
@@ -166,7 +166,7 @@ Conclude the proposal exactly with:
       const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
-          Authorization: `Bearer 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`,
+          Authorization: `Bearer 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`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({

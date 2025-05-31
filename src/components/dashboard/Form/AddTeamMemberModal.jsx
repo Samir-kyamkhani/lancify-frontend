@@ -14,13 +14,13 @@ export default function AddTeamMemberModal({
   teamMemberData = {},
 }) {
   const [form, setForm] = useState({
-    name: teamMemberData.name || "",
-    email: teamMemberData.email || "",
-    role: teamMemberData.role || "Member",
-    status: teamMemberData.status || "Active",
+    name: teamMemberData?.name || "",
+    email: teamMemberData?.email || "",
+    role: teamMemberData?.role || "Member",
+    status: teamMemberData?.status || "Active",
     password: "",
-    permissions: Array.isArray(teamMemberData.permissions)
-      ? teamMemberData.permissions.map(String)
+    permissions: Array.isArray(teamMemberData?.permissions)
+      ? teamMemberData?.permissions.map(String)
       : [],
   });
 
@@ -33,7 +33,7 @@ export default function AddTeamMemberModal({
         const permissionsFromAPI = res.data?.data || [];
         const cleanPermissions = permissionsFromAPI
           .map((perm) =>
-            typeof perm === "object" && perm.name ? perm.name : String(perm)
+            typeof perm === "object" && perm?.name ? perm?.name : String(perm)
           )
           .filter(Boolean);
         setPermissionOptions(cleanPermissions);
@@ -56,12 +56,11 @@ export default function AddTeamMemberModal({
     e.preventDefault();
     try {
       if (isEdit) {
-        // Assuming you have an update action
         await dispatch(editTeamMember({ id: teamMemberData.id, ...form }));
       } else {
         await dispatch(addTeamMember(form));
       }
-      onSubmit(form);
+      onClose();
     } catch (err) {
       console.error("Failed to submit team member:", err);
     }

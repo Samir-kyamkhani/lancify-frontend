@@ -107,6 +107,7 @@ export const editClient = (updatedData) => async (dispatch) => {
       updatedData
     );
     dispatch(clientSuccess(data.message));
+    dispatch(fetchAllClients());
   } catch (err) {
     dispatch(clientFail(extractError(err)));
   }
@@ -116,7 +117,9 @@ export const editClient = (updatedData) => async (dispatch) => {
 export const deleteClient = (id) => async (dispatch) => {
   dispatch(clientRequest());
   try {
-    const { data } = await axios.delete(`${baseURL}/client/delete-client/${id}`);
+    const { data } = await axios.delete(
+      `${baseURL}/client/delete-client/${id}`
+    );
     dispatch(clientSuccess(data.message));
     dispatch(fetchAllClients()); // Refresh list
   } catch (err) {

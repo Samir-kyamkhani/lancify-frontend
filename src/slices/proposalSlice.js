@@ -59,14 +59,12 @@ const extractError = (err) =>
 // ➕ Add Proposal
 export const addProposal = (proposalData) => async (dispatch) => {
   dispatch(proposalRequest());
-  console.log(proposalData);
   try {
     const { data } = await axios.post(
       `${baseURL}/proposals/create-proposal`,
       proposalData,
       { withCredentials: true }
     );
-    console.log(data);
 
     dispatch(proposalSuccess(data.message));
     dispatch(fetchAllProposals());

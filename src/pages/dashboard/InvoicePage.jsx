@@ -1,256 +1,302 @@
-import { useEffect, useState } from "react";
-import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
-import { FiMoreHorizontal } from "react-icons/fi";
-import HeaderSection from "../../components/dashboard/HeaderSection";
+import { useEffect, useState, useCallback } from "react";
 import WalletSection from "../../components/dashboard/WalletSection";
-import { Link } from "react-router-dom";
-import { statusColors } from "../../index.js";
-import AddInvoiceModal from "../../components/dashboard/Form/AddInvoiceModal.jsx";
-import UserInvoicesPage from "../clientDashboard/UserInvoicesPage.jsx";
-import { getUserRole } from "../../settings.js";
+import HeaderSection from "../../components/dashboard/HeaderSection";
+import { StatsCard } from "../../components/dashboard/StatsCard";
+import DeleteConfirmModal from "../../components/DeleteConfirmModal";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  addInvoice,
-  deleteInvoice,
-  fetchAllInvoices,
-} from "../../slices/paymentSlice.js";
+import { fetchAllInvoices, deleteInvoice } from "../../slices/paymentSlice";
+import AddInvoiceModal from "../../components/dashboard/Form/AddInvoiceModal";
+import EmptyState from "./EmptyState";
+
+const statusConfig = {
+  Paid: {
+    color: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    icon: "✅",
+  },
+  Pending: {
+    color: "bg-amber-100 text-amber-700 border-amber-200",
+    icon: "⏳",
+  },
+  Overdue: { color: "bg-red-100 text-red-700 border-red-200", icon: "⚠️" },
+  Draft: { color: "bg-slate-100 text-slate-700 border-slate-200", icon: "📝" },
+};
 
 export default function InvoicesPage() {
-  const [menuIndex, setMenuIndex] = useState(null);
-  const [editInvoiceModal, setEditInvoiceModal] = useState(null);
-  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [selectedInvoiceId, setSelectedInvoiceId] = useState(null);
-
-  const role = getUserRole();
   const dispatch = useDispatch();
+  const { invoices } = useSelector((state) => state.paymentData);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [menuIndex, setMenuIndex] = useState(null);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState(null);
+  const [selectedInvoices, setSelectedInvoices] = useState([]);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [editInvoiceData, setEditInvoiceData] = useState(null);
 
   useEffect(() => {
     dispatch(fetchAllInvoices());
   }, [dispatch]);
 
-  const { invoices } = useSelector((state) => state.paymentData);
+  const [filteredInvoices, setFilteredInvoices] = useState([]);
 
-  const handleEditClient = (item) => {
-    setEditInvoiceModal(item);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const normalizedSearch = searchTerm?.toLowerCase() || "";
+
+      const filtered = invoices.filter((inv) => {
+        const matchesSearch =
+          inv.client?.toLowerCase().includes(normalizedSearch) ||
+          inv.invid?.toLowerCase().includes(normalizedSearch);
+
+        const matchesStatus =
+          filterStatus === "All" || inv.status === filterStatus;
+
+        return matchesSearch && matchesStatus;
+      });
+
+      setFilteredInvoices(filtered);
+    }, 300); // ⏱ Debounce delay
+
+    return () => clearTimeout(timeout); // ✅ Cleanup on change
+  }, [searchTerm, filterStatus, invoices]);
+
+  const handleSelectAll = (checked) =>
+    setSelectedInvoices(checked ? filteredInvoices.map((inv) => inv.id) : []);
+
+  const handleSelectInvoice = (id, checked) =>
+    setSelectedInvoices((prev) =>
+      checked ? [...prev, id] : prev.filter((invId) => invId !== id)
+    );
+
+  const confirmDeleteInvoice = () => {
+    if (selectedInvoiceId) {
+      dispatch(deleteInvoice(selectedInvoiceId));
+    }
+    setShowDeleteConfirm(false);
+    setSelectedInvoiceId(null);
+  };
+
+  const handleEditInvoice = useCallback((invoice) => {
+    setEditInvoiceData(invoice);
     setShowInvoiceModal(true);
     setMenuIndex(null);
-  };
+  }, []);
 
-  const confirmDeleteProposal = (id) => {
-    try {
-      dispatch(deleteInvoice(selectedInvoiceId)); 
-      setShowDeleteConfirm(false);
-      setSelectedInvoiceId(null);
-      dispatch(fetchAllInvoices());
-    } catch (error) {
-      console.error("Error deleting invoice:", error.message);
-      alert(error.message);
-    }
-  };
+  const ActionMenu = ({ invoice, index }) => (
+    <div className="inline-block">
+      <button
+        onClick={() => setMenuIndex(menuIndex === index ? null : index)}
+        className="p-2 hover:bg-slate-100 rounded-lg"
+      >
+        <span className="text-slate-400 hover:text-slate-600 cursor-pointer">
+          •••
+        </span>
+      </button>
+
+      {menuIndex === index && (
+        <div className="absolute right-4 mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-200 z-20">
+          <div className="py-2 space-y-1">
+            <button className="w-full cursor-pointer text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900 flex items-center gap-2 transition">
+              👁️ <span>View Details</span>
+            </button>
+            <button
+              className="w-full cursor-pointer text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900 flex items-center gap-2 transition"
+              onClick={() => handleEditInvoice(invoice)}
+            >
+              ✏️ <span>Edit Invoice</span>
+            </button>
+            <button className="w-full cursor-pointer text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900 flex items-center gap-2 transition">
+              📧 <span>Send Invoice</span>
+            </button>
+            <button className="w-full cursor-pointer text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900 flex items-center gap-2 transition">
+              📄 <span>Download PDF</span>
+            </button>
+
+            {invoice.status !== "Paid" && (
+              <button className="w-full cursor-pointer text-left px-4 py-2 text-sm text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-2 transition">
+                ✅ <span>Mark as Paid</span>
+              </button>
+            )}
+
+            <button
+              className="w-full cursor-pointer text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 flex items-center gap-2  transition"
+              onClick={() => {
+                setSelectedInvoiceId(invoice.id);
+                setShowDeleteConfirm(true);
+                setMenuIndex(null);
+              }}
+            >
+              🗑️ <span>Delete</span>
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
   return (
-    <div>
-      {role === "admin" && (
-        <>
-          <HeaderSection />
-          <div className="overflow-x-auto bg-white rounded-xl border mb-5 border-gray-200 shadow-sm">
-            <table className="w-full text-sm h-fit text-left">
-              <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
-                <tr>
-                  <th className="px-5 py-3">
-                    <input type="checkbox" className="accent-blue-600" />
-                  </th>
-                  <th className="px-5 py-3 font-semibold">Invoice ID</th>
-                  <th className="px-5 py-3 font-semibold">Client</th>
-                  <th className="px-5 py-3 font-semibold">Status</th>
-                  <th className="px-5 py-3 font-semibold">Issue Date</th>
-                  <th className="px-5 py-3 font-semibold">Due Date</th>
-                  <th className="px-5 py-3 font-semibold">Total Amount</th>
-                  <th className="px-5 py-3 font-semibold text-right">{""}</th>
+    <>
+      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-8">
+        <HeaderSection
+          title="Payment Management"
+          subtitle="Manage and track all your Payments"
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          filterStatus={filterStatus}
+          setFilterStatus={setFilterStatus}
+        />
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-8 mb-10">
+          {[
+            {
+              title: "Total Invoices",
+              value: invoices.length,
+              icon: () => <span className="text-indigo-600">📊</span>,
+              color: "text-slate-800",
+              bgColor: "bg-indigo-100",
+            },
+            {
+              title: "Paid",
+              value: invoices.filter((inv) => inv.status === "Paid").length,
+              icon: () => <span className="text-emerald-600">✅</span>,
+              color: "text-emerald-600",
+              bgColor: "bg-emerald-100",
+            },
+            {
+              title: "Pending",
+              value: invoices.filter((inv) => inv.status === "Pending").length,
+              icon: () => <span className="text-amber-600">⏳</span>,
+              color: "text-amber-600",
+              bgColor: "bg-amber-100",
+            },
+            {
+              title: "Total Revenue",
+              value: `$${invoices
+                .reduce(
+                  (sum, inv) =>
+                    inv.status === "Paid"
+                      ? sum + parseFloat(inv.total.replace(",", ""))
+                      : sum,
+                  0
+                )
+                .toLocaleString()}`,
+              icon: () => <span className="text-green-600">💰</span>,
+              color: "text-green-600",
+              bgColor: "bg-green-100",
+            },
+          ].map((stat, i) => (
+            <StatsCard key={i} {...stat} />
+          ))}
+        </div>
+      </div>
+
+      <div className="overflow-x-auto bg-white/80 backdrop-blur-lg rounded-2xl shadow border border-white/20 mb-10">
+        <table className="min-w-full text-sm">
+          <thead className="bg-slate-100">
+            <tr className="text-left text-slate-700 font-semibold">
+              <th className="p-4">
+                <input
+                  type="checkbox"
+                  checked={
+                    selectedInvoices.length === filteredInvoices.length &&
+                    filteredInvoices.length > 0
+                  }
+                  onChange={(e) => handleSelectAll(e.target.checked)}
+                />
+              </th>
+              <th className="p-4">Invoice ID</th>
+              <th className="p-4">Client</th>
+              <th className="p-4">Status</th>
+              <th className="p-4">Issue Date</th>
+              <th className="p-4">Due Date</th>
+              <th className="p-4">Amount</th>
+              <th className="p-4 text-right"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {filteredInvoices.length > 0 ? (
+              filteredInvoices.map((invoice, i) => (
+                <tr key={invoice.id} className="hover:bg-slate-50">
+                  <td className="p-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedInvoices.includes(invoice.id)}
+                      onChange={(e) =>
+                        handleSelectInvoice(invoice.id, e.target.checked)
+                      }
+                    />
+                  </td>
+                  <td className="p-4 font-semibold">{invoice.invid}</td>
+                  <td className="p-4">{invoice.client}</td>
+                  <td className="p-4">
+                    <span
+                      className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs border font-medium ${
+                        statusConfig[invoice.status]?.color
+                      }`}
+                    >
+                      {statusConfig[invoice.status]?.icon} {invoice.status}
+                    </span>
+                  </td>
+                  <td className="p-4">
+                    {new Date(invoice.issueDate).toLocaleDateString()}
+                  </td>
+                  <td className="p-4">
+                    {new Date(invoice.dueDate).toLocaleDateString()}
+                  </td>
+                  <td className="p-4 font-bold">${invoice.total}</td>
+                  <td className="p-4 text-right">
+                    <ActionMenu invoice={invoice} index={i} />
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {invoices.length > 0 ? (
-                  invoices.map((item, index) => (
-                    <tr key={index} className="hover:bg-gray-50 transition">
-                      <td className="px-5 py-4">
-                        <input type="checkbox" className="accent-blue-600" />
-                      </td>
-                      <td className="px-5 py-4 font-medium text-gray-800">
-                        {item.invid}
-                      </td>
-                      <td className="px-5 py-4 text-gray-800">
-                        {item.client || "N/A"}
-                      </td>
-                      <td className="px-5 py-4">
-                        <span
-                          className={`text-xs px-3 py-1 rounded-full font-semibold whitespace-nowrap ${
-                            statusColors[item.status] ||
-                            "bg-gray-100 text-gray-600"
-                          }`}
-                        >
-                          {item.status}
-                        </span>
-                      </td>
-                      <td className="px-5 py-4 text-gray-700">
-                        {new Date(item.issueDate).toLocaleDateString()}
-                      </td>
-                      <td className="px-5 py-4 text-gray-700">
-                        {new Date(item.dueDate).toLocaleDateString()}
-                      </td>
-                      <td className="px-5 py-4 text-gray-700">${item.total}</td>
-                      <td className="px-5 py-4 text-right ">
-                        <FiMoreHorizontal
-                          className="text-xl cursor-pointer text-gray-600 hover:text-blue-600"
-                          onClick={() =>
-                            setMenuIndex(menuIndex === index ? null : index)
-                          }
-                        />
-                        {menuIndex === index && (
-                          <div className="absolute right-12 mt-1 w-46 bg-white rounded-md shadow-lg z-10 border border-gray-200 text-sm overflow-hidden">
-                            <ul className="divide-y divide-gray-100">
-                              <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                                <Link
-                                  to={`/dashboard/payment/${item.id}`}
-                                  className="flex items-center"
-                                >
-                                  <FaEye className="mr-3 text-gray-600" /> View
-                                  Details
-                                </Link>
-                              </li>
-                              <li
-                                onClick={() => handleEditClient(item)}
-                                className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700"
-                              >
-                                <FaEdit className="mr-3 text-gray-600" /> Edit
-                              </li>
-                              <li
-                                className="flex items-center px-4 py-2 text-gray-400 cursor-not-allowed"
-                                title="Coming soon"
-                              >
-                                <svg
-                                  className="w-4 h-4 mr-3"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path d="M12 19V6M5 12h14" />
-                                </svg>
-                                Download PDF
-                              </li>
-                              <li
-                                className="flex items-center px-4 py-2 text-gray-400 cursor-not-allowed"
-                                title="Coming soon"
-                              >
-                                <svg
-                                  className="w-4 h-4 mr-3"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path d="M16 12H8m8 0l-4 4m4-4l-4-4" />
-                                </svg>
-                                Send Invoice
-                              </li>
-                              <li className="flex items-center px-4 py-2 text-gray-400 cursor-not-allowed">
-                                <svg
-                                  className="w-4 h-4 mr-3"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path d="M5 13l4 4L19 7" />
-                                </svg>
-                                Mark as Paid
-                              </li>
-                              <li className="flex items-center px-4 py-2 text-gray-400 cursor-not-allowed">
-                                <svg
-                                  className="w-4 h-4 mr-3"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                                Mark as Cancelled
-                              </li>
-                              <li
-                                onClick={() => {
-                                  setSelectedInvoiceId(item.id);
-                                  setShowDeleteConfirm(true);
-                                  setMenuIndex(null);
-                                }}
-                                className="flex items-center px-4 py-2 hover:bg-red-50 text-red-600 cursor-pointer"
-                              >
-                                <FaTrash className="mr-3" /> Delete
-                              </li>
-                            </ul>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={8} className="text-center py-4 text-gray-500">
-                      No invoices found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={8}>
+                  <EmptyState
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    setShowClientModal={setShowInvoiceModal}
+                    noClientsTitle="No invoices yet"
+                    noClientsMessage="Get started by adding your first invoice to begin tracking your payments."
+                    noMatchTitle="No invoices found"
+                    noMatchMessage="No invoices match your search criteria. Try adjusting your search."
+                    addClientButtonText="Add Your First Invoice"
+                    clearSearchText="Clear search"
+                  />
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
-          <WalletSection />
+      <WalletSection />
 
-          {showInvoiceModal && (
-            <AddInvoiceModal
-              isEdit={true}
-              invoiceData={editInvoiceModal}
-              onSubmit={(data) => {
-                setShowInvoiceModal(false);
-                setEditInvoiceModal(null);
-              }}
-              onClose={() => {
-                setShowInvoiceModal(false);
-                setEditInvoiceModal(null);
-              }}
-            />
-          )}
-
-          {showDeleteConfirm && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 px-6">
-              <div className="bg-white p-6 rounded-xl w-full max-w-sm shadow-lg">
-                <h2 className="text-lg font-semibold mb-4">Confirm Deletion</h2>
-                <p className="text-gray-700 mb-6">
-                  Are you sure you want to delete this invoice? This action
-                  cannot be undone.
-                </p>
-                <div className="flex justify-end gap-4">
-                  <button
-                    onClick={() => setShowDeleteConfirm(false)}
-                    className="px-4 py-2 bg-gray-300 rounded-md cursor-pointer"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={confirmDeleteProposal}
-                    className="px-4 py-2 bg-red-600 text-white rounded-md cursor-pointer"
-                  >
-                    Yes, Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </>
+      {selectedInvoices.length > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white shadow rounded-xl px-4 py-3 flex gap-4 z-50">
+          <span>{selectedInvoices.length} selected</span>
+        </div>
       )}
-      {role === "user" && <UserInvoicesPage />}
-    </div>
+
+      {showDeleteConfirm && (
+        <DeleteConfirmModal
+          show={showDeleteConfirm}
+          setShow={setShowDeleteConfirm}
+          onConfirm={confirmDeleteInvoice}
+        />
+      )}
+
+      {showInvoiceModal && (
+        <AddInvoiceModal
+          isEdit={true}
+          invoiceData={editInvoiceData}
+          onClose={() => {
+            setShowInvoiceModal(false);
+            setEditInvoiceData(null);
+          }}
+        />
+      )}
+    </>
   );
 }
