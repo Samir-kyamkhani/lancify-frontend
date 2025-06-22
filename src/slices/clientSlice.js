@@ -59,7 +59,6 @@ const extractError = (err) =>
 // ➕ Add Client
 export const addClient = (clientData) => async (dispatch) => {
   dispatch(clientRequest());
-  console.log(clientData);
 
   try {
     const { data } = await axios.post(
@@ -80,7 +79,7 @@ export const fetchAllClients = () => async (dispatch) => {
   try {
     const { data } = await axios.get(`${baseURL}/client/get-all-clients`);
     dispatch(setClients(data.data));
-    dispatch(clientSuccess("Fetched all clients"));
+    dispatch(clientSuccess(data.message));
   } catch (err) {
     dispatch(clientFail(extractError(err)));
   }
@@ -92,7 +91,7 @@ export const fetchSingleClient = (id) => async (dispatch) => {
   try {
     const { data } = await axios.get(`${baseURL}/client/${id}`);
     dispatch(setSingleClient(data.data));
-    dispatch(clientSuccess("Client fetched"));
+    dispatch(clientSuccess(data.message));
   } catch (err) {
     dispatch(clientFail(extractError(err)));
   }

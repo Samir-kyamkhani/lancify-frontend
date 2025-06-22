@@ -1,13 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaCalendarAlt } from "react-icons/fa";
-import { projects, tasks } from "../../..";
-
+import { useDispatch, useSelector } from "react-redux";
+import { tasks } from "../../..";
+import { formatDate } from "../../../settings";
+import { fetchAllTasks } from "../../../slices/taskSlice";
 
 export default function ProjectDetailedPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const project = projects.find((pr) => pr.id === Number(id));
+  const { projects } = useSelector((state) => state.projectData);
+  const project = projects.find((pr) => pr.id === id);
+
+  const { tasks = [] } = useSelector((state) => state.taskData);
+
+  const dispatch = useDispatch();
+
+  // Fetch all tasks on mount
+  useEffect(() => {
+    dispatch(fetchAllTasks());
+  }, [dispatch]);
+
   const [progress, setProgress] = useState(20);
 
   if (!project) {
@@ -38,15 +51,17 @@ export default function ProjectDetailedPage() {
           <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-gray-700">
             <div className="flex items-center gap-2">
               <FaCalendarAlt className="text-gray-500" />
-              <span><strong>Start:</strong> {project.startDate}</span>
+              <span>{formatDate(project.startDate)}</span>
             </div>
             <div className="flex items-center gap-2">
               <FaCalendarAlt className="text-gray-500" />
-              <span><strong>End:</strong> {project.endDate}</span>
+              <span>{formatDate(project.endDate)}</span>
             </div>
             <div className="flex items-center gap-2">
               <FaCalendarAlt className="text-gray-500" />
-              <span><strong>Progress:</strong> {progress}%</span>
+              <span>
+                <strong>Progress:</strong> {progress}%
+              </span>
             </div>
           </div>
         </div>
@@ -70,11 +85,15 @@ export default function ProjectDetailedPage() {
               >
                 <span className="text-sm">{task.title}</span>
                 <span
-                  className={`px-3 py-1 text-xs rounded-full font-semibold ${
-                    task.priority === "High"
+                  className={`px-3 py-1 text-xs capitalize rounded-full font-semibold ${
+                    task.priority === "high"
                       ? "bg-red-100 text-red-600"
-                      : task.priority === "Medium"
+                      : task.priority === "medium"
                       ? "bg-yellow-100 text-yellow-600"
+                      : task.priority === "low"
+                      ? "bg-blue-100 text-blue-600"
+                      : task.priority === "critical"
+                      ? "bg-purple-100 text-purple-600"
                       : "bg-gray-200 text-gray-600"
                   }`}
                 >

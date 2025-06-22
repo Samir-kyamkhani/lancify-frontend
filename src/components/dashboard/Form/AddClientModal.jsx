@@ -1,11 +1,13 @@
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import InputField from "../../Ui/InputField";
 import SelectField from "../../Ui/SelectField";
 import BtnField from "../../Ui/BtnField";
-import { motion } from "framer-motion";
-import { addClient, editClient } from "../../../slices/clientSlice";
-import AutoClearMessage from "../../AutoClearMessage";
+import {
+  addClient,
+  editClient,
+  clearMessages,
+} from "../../../slices/clientSlice";
 
 export default function AddClientModal({
   onClose,
@@ -14,22 +16,55 @@ export default function AddClientModal({
 }) {
   const dispatch = useDispatch();
 
+  // Redux state for error & success
+  const { error: clientError, success: clientSuccess } = useSelector(
+    (state) => state.clientData
+  );
+
+  // Local form state
   const [form, setForm] = useState({
-    name: clientData.name || "",
-    email: clientData.email || "",
-    phone: clientData.phone || "",
-    status: clientData.status || "Lead",
-    country: clientData.country || "",
-    tags: clientData.tags?.map((tag) => tag.name).join(", ") || "",
+    name: clientData?.name || "",
+    company: clientData?.company || "",
+    email: clientData?.email || "",
+    password: clientData?.password_hash || "",
+    phone: clientData?.phone || "",
+    status: clientData?.status || "Lead",
+    country: clientData?.country || "",
+    tags: clientData?.tags?.map((tag) => tag.name).join(", ") || "",
   });
+
+  // Local error state (for display inside form)
+  const [localError, setLocalError] = useState(null);
+
+  // Clear messages on unmount or on modal close
+  useEffect(() => {
+    return () => {
+      dispatch(clearMessages());
+    };
+  }, [dispatch]);
+
+  // If success happens (client added/edited), close the modal automatically
+  useEffect(() => {
+    if (clientSuccess) {
+      onClose();
+    }
+  }, [clientSuccess, onClose]);
+
+  // Sync Redux error to local error for display
+  useEffect(() => {
+    setLocalError(clientError);
+  }, [clientError]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    // Clear local error on input change to give fresh start
+    if (localError) setLocalError(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const payload = {
       ...form,
       tags: form.tags
@@ -38,12 +73,13 @@ export default function AddClientModal({
         .filter(Boolean),
     };
 
-    await dispatch(addClient(payload));
-    onClose();
+    // Dispatch addClient; closing will be handled by useEffect on success
+    dispatch(addClient(payload));
   };
 
   const editHandleSubmit = async (e) => {
     e.preventDefault();
+
     const payload = {
       id: clientData.id,
       ...form,
@@ -53,8 +89,7 @@ export default function AddClientModal({
         .filter(Boolean),
     };
 
-    await dispatch(editClient(payload));
-    onClose();
+    dispatch(editClient(payload));
   };
 
   return (
@@ -68,7 +103,13 @@ export default function AddClientModal({
             ? "Update the details of the client."
             : "Enter the details for the new client. Fields marked with * are required."}
         </p>
-        <AutoClearMessage />
+
+        {/* Show error from local state */}
+        {localError && (
+          <div className="bg-red-100 text-red-700 px-4 py-2 rounded mb-4 text-sm">
+            {localError}
+          </div>
+        )}
 
         <form
           onSubmit={isEdit ? editHandleSubmit : handleSubmit}
@@ -80,7 +121,15 @@ export default function AddClientModal({
             value={form.name}
             onChange={handleChange}
             required
-            placeholder="Client Company Name"
+            placeholder="Client Name"
+          />
+          <InputField
+            label="Company"
+            name="company"
+            value={form.company}
+            onChange={handleChange}
+            required
+            placeholder="Company Name"
           />
 
           <InputField
@@ -99,6 +148,16 @@ export default function AddClientModal({
             onChange={handleChange}
             required
             placeholder="contact@client.com"
+          />
+
+          <InputField
+            label="Password"
+            name="password"
+            type="password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            placeholder="Please Enter password"
           />
 
           <SelectField

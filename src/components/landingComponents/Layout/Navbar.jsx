@@ -5,6 +5,7 @@ import { BiMenuAltRight } from "react-icons/bi";
 import { CgClose, CgProfile } from "react-icons/cg";
 import { navItems } from "../../../index";
 import { useSelector } from "react-redux";
+import { FaArtstation } from "react-icons/fa";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,12 +36,16 @@ function Navbar() {
       } px-4 sm:px-8 py-3 flex items-center justify-between`}
     >
       {/* Logo */}
-      <div className="w-[100px]">
+      <div className="w-[100px] flex gap-3 items-center justify-center ">
+        <div><FaArtstation className="text-2xl mt-1"/></div>
         <Link to="/">
-          <img
+          {/* <img
             src="https://framerusercontent.com/images/on7xUpJ1SM94eAeiyf04v5F4rjQ.png"
             alt="Logo"
-          />
+          /> */}
+          
+
+          <h1 className="text-3xl font-bold capitalize">Lancify</h1>
         </Link>
       </div>
 
@@ -76,7 +81,7 @@ function Navbar() {
         </ul>
         <div className="flex items-center">
           {user ? (
-            <Link to={'/dashboard'}>
+            <Link to={"/dashboard"}>
               {user.avatarUrl ? (
                 <img
                   src={user.avatarUrl}

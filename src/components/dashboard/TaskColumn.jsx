@@ -1,3 +1,4 @@
+import { BsPlus } from "react-icons/bs";
 import TaskCard from "./TaskCard";
 
 export default function TaskColumn({ title, tasks = [], onAddTask, className = "" }) {

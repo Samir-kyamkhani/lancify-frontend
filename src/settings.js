@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 export const routeAccessMap = {
   //  routes acces
   "/dashboard": ["admin", "user"],
@@ -26,5 +28,11 @@ export const getUserRole = () => {
 
 export const isAuthenticated = () => {
   const user = getCurrentUser();
-  return !!user;
+  return !!user && !!user.email && !!user.role;
+};
+
+export const formatDate = (dateString) => {
+  if (!dateString) return "-";
+  const parsedDate = new Date(dateString);
+  return isNaN(parsedDate) ? "-" : format(parsedDate, "dd MMM yyyy");
 };

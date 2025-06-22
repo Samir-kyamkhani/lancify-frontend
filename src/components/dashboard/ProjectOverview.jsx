@@ -18,7 +18,9 @@ export default function ProjectOverview() {
   const [projectDelete, setProjectDelete] = useState(null);
 
   const dispatch = useDispatch();
-  const { projects, loading, error } = useSelector((state) => state.projectData);
+  const { projects, loading, error } = useSelector(
+    (state) => state.projectData
+  );
 
   useEffect(() => {
     dispatch(fetchAllProjects());
@@ -68,7 +70,8 @@ export default function ProjectOverview() {
   };
 
   const statsData = useMemo(() => {
-    const count = (status) => projects.filter((c) => c.status === status).length;
+    const count = (status) =>
+      projects.filter((c) => c.status === status).length;
     return {
       total: projects.length,
       completed: count("completed"),
@@ -227,7 +230,7 @@ export default function ProjectOverview() {
       {/* Add/Edit Project Modal */}
       {showProjectModal && (
         <AddProjectModal
-          isEdit={Boolean(editProjectModal)}
+          isEdit={!!editProjectModal}
           projectData={editProjectModal}
           onSubmit={(data) => {
             console.log("Project submitted:", data);

@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAllInvoices, deleteInvoice } from "../../slices/paymentSlice";
 import AddInvoiceModal from "../../components/dashboard/Form/AddInvoiceModal";
 import EmptyState from "./EmptyState";
+import { getUserRole } from "../../settings";
+import UserInvoicesPage from "../clientDashboard/UserInvoicesPage";
 
 const statusConfig = {
   Paid: {
@@ -24,6 +26,8 @@ const statusConfig = {
 export default function InvoicesPage() {
   const dispatch = useDispatch();
   const { invoices } = useSelector((state) => state.paymentData);
+  const invoiceIds = invoices.map((invoice) => invoice.id);
+  console.log(invoiceIds);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
@@ -126,166 +130,175 @@ export default function InvoicesPage() {
     </div>
   );
 
+  const role = getUserRole();
+
   return (
     <>
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-8 mb-8">
-        <HeaderSection
-          title="Payment Management"
-          subtitle="Manage and track all your Payments"
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          filterStatus={filterStatus}
-          setFilterStatus={setFilterStatus}
-        />
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mt-6 mb-10">
-          {[
-            {
-              title: "Total Invoices",
-              value: invoices.length,
-              icon: () => <span className="text-indigo-600">📊</span>,
-              color: "text-slate-800",
-              bgColor: "bg-indigo-100",
-            },
-            {
-              title: "Paid",
-              value: invoices.filter((inv) => inv.status === "Paid").length,
-              icon: () => <span className="text-emerald-600">✅</span>,
-              color: "text-emerald-600",
-              bgColor: "bg-emerald-100",
-            },
-            {
-              title: "Pending",
-              value: invoices.filter((inv) => inv.status === "Pending").length,
-              icon: () => <span className="text-amber-600">⏳</span>,
-              color: "text-amber-600",
-              bgColor: "bg-amber-100",
-            },
-            {
-              title: "Total Revenue",
-              value: `$${invoices
-                .reduce(
-                  (sum, inv) =>
-                    inv.status === "Paid"
-                      ? sum + parseFloat(inv.total.replace(",", ""))
-                      : sum,
-                  0
-                )
-                .toLocaleString()}`,
-              icon: () => <span className="text-green-600">💰</span>,
-              color: "text-green-600",
-              bgColor: "bg-green-100",
-            },
-          ].map((stat, i) => (
-            <StatsCard key={i} {...stat} />
-          ))}
-        </div>
-      </div>
-
-      {/* Table Section */}
-      <div className="overflow-x-auto bg-white/80 backdrop-blur-lg rounded-2xl shadow border border-white/20 mb-10">
-          {filteredInvoices.length === 0 ? (
-            <EmptyState
+      {role === "admin" && (
+        <div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-8 mb-8">
+            <HeaderSection
+              title="Payment Management"
+              subtitle="Manage and track all your Payments"
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
-              setShowClientModal={setShowInvoiceModal}
-              noClientsTitle="No invoices yet"
-              noClientsMessage="Get started by adding your first invoice to begin tracking your payments."
-              noMatchTitle="No invoices found"
-              noMatchMessage="No invoices match your search criteria. Try adjusting your search."
-              addClientButtonText="Add Your First Invoice"
-              clearSearchText="Clear search"
+              filterStatus={filterStatus}
+              setFilterStatus={setFilterStatus}
             />
-          ) : (
-            <table className="w-full text-sm">
-              <thead className="bg-slate-100">
-                <tr className="text-left text-slate-700 font-semibold">
-                  <th className="p-4">
-                    <input
-                      type="checkbox"
-                      checked={
-                        selectedInvoices.length === filteredInvoices.length &&
-                        filteredInvoices.length > 0
-                      }
-                      onChange={(e) => handleSelectAll(e.target.checked)}
-                    />
-                  </th>
-                  <th className="p-4">Invoice ID</th>
-                  <th className="p-4">Client</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4">Issue Date</th>
-                  <th className="p-4">Due Date</th>
-                  <th className="p-4">Amount</th>
-                  <th className="p-4 text-right"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredInvoices.map((invoice, i) => (
-                  <tr key={invoice.id} className="hover:bg-slate-50">
-                    <td className="p-4">
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mt-6 mb-10">
+              {[
+                {
+                  title: "Total Invoices",
+                  value: invoices.length,
+                  icon: () => <span className="text-indigo-600">📊</span>,
+                  color: "text-slate-800",
+                  bgColor: "bg-indigo-100",
+                },
+                {
+                  title: "Paid",
+                  value: invoices.filter((inv) => inv.status === "Paid").length,
+                  icon: () => <span className="text-emerald-600">✅</span>,
+                  color: "text-emerald-600",
+                  bgColor: "bg-emerald-100",
+                },
+                {
+                  title: "Pending",
+                  value: invoices.filter((inv) => inv.status === "Pending")
+                    .length,
+                  icon: () => <span className="text-amber-600">⏳</span>,
+                  color: "text-amber-600",
+                  bgColor: "bg-amber-100",
+                },
+                {
+                  title: "Total Revenue",
+                  value: `$${invoices
+                    .reduce(
+                      (sum, inv) =>
+                        inv.status === "Paid"
+                          ? sum + parseFloat(inv.total.replace(",", ""))
+                          : sum,
+                      0
+                    )
+                    .toLocaleString()}`,
+                  icon: () => <span className="text-green-600">💰</span>,
+                  color: "text-green-600",
+                  bgColor: "bg-green-100",
+                },
+              ].map((stat, i) => (
+                <StatsCard key={i} {...stat} />
+              ))}
+            </div>
+          </div>
+
+          {/* Table Section */}
+          <div className="overflow-x-auto bg-white/80 backdrop-blur-lg rounded-2xl shadow border border-white/20 mb-10">
+            {filteredInvoices.length === 0 ? (
+              <EmptyState
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                setShowClientModal={setShowInvoiceModal}
+                noClientsTitle="No invoices yet"
+                noClientsMessage="Get started by adding your first invoice to begin tracking your payments."
+                noMatchTitle="No invoices found"
+                noMatchMessage="No invoices match your search criteria. Try adjusting your search."
+                addClientButtonText="Add Your First Invoice"
+                clearSearchText="Clear search"
+              />
+            ) : (
+              <table className="w-full text-sm">
+                <thead className="bg-slate-100">
+                  <tr className="text-left text-slate-700 font-semibold">
+                    <th className="p-4">
                       <input
                         type="checkbox"
-                        checked={selectedInvoices.includes(invoice.id)}
-                        onChange={(e) =>
-                          handleSelectInvoice(invoice.id, e.target.checked)
+                        checked={
+                          selectedInvoices.length === filteredInvoices.length &&
+                          filteredInvoices.length > 0
                         }
+                        onChange={(e) => handleSelectAll(e.target.checked)}
                       />
-                    </td>
-                    <td className="p-4 font-semibold">{invoice.invid}</td>
-                    <td className="p-4">{invoice.client}</td>
-                    <td className="p-4">
-                      <span
-                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs border font-medium ${
-                          statusConfig[invoice.status]?.color
-                        }`}
-                      >
-                        {statusConfig[invoice.status]?.icon} {invoice.status}
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      {new Date(invoice.issueDate).toLocaleDateString()}
-                    </td>
-                    <td className="p-4">
-                      {new Date(invoice.dueDate).toLocaleDateString()}
-                    </td>
-                    <td className="p-4 font-bold">${invoice.total}</td>
-                    <td className="p-4 text-right">
-                      <ActionMenu invoice={invoice} index={i} />
-                    </td>
+                    </th>
+                    <th className="p-4">Invoice ID</th>
+                    <th className="p-4">Client</th>
+                    <th className="p-4">Status</th>
+                    <th className="p-4">Issue Date</th>
+                    <th className="p-4">Due Date</th>
+                    <th className="p-4">Amount</th>
+                    <th className="p-4 text-right"></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredInvoices.map((invoice, i) => (
+                    <tr key={invoice.id} className="hover:bg-slate-50">
+                      <td className="p-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedInvoices.includes(invoice.id)}
+                          onChange={(e) =>
+                            handleSelectInvoice(invoice.id, e.target.checked)
+                          }
+                        />
+                      </td>
+                      <td className="p-4 font-semibold">{invoice.invid}</td>
+                      <td className="p-4">{invoice.client}</td>
+                      <td className="p-4">
+                        <span
+                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs border font-medium ${
+                            statusConfig[invoice.status]?.color
+                          }`}
+                        >
+                          {statusConfig[invoice.status]?.icon} {invoice.status}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        {new Date(invoice.issueDate).toLocaleDateString()}
+                      </td>
+                      <td className="p-4">
+                        {new Date(invoice.dueDate).toLocaleDateString()}
+                      </td>
+                      <td className="p-4 font-bold">₹ {invoice.total}</td>
+                      <td className="p-4 text-right">
+                        <ActionMenu invoice={invoice} index={i} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          <WalletSection invoiceId={invoiceIds} />
+
+          {selectedInvoices.length > 0 && (
+            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white shadow rounded-xl px-4 py-3 flex flex-wrap gap-4 text-sm z-50">
+              <span>{selectedInvoices.length} selected</span>
+              {/* Add more bulk actions if needed */}
+            </div>
           )}
-      </div>
 
-      <WalletSection />
+          {showDeleteConfirm && (
+            <DeleteConfirmModal
+              show={showDeleteConfirm}
+              setShow={setShowDeleteConfirm}
+              onConfirm={confirmDeleteInvoice}
+            />
+          )}
 
-      {selectedInvoices.length > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white shadow rounded-xl px-4 py-3 flex flex-wrap gap-4 text-sm z-50">
-          <span>{selectedInvoices.length} selected</span>
-          {/* Add more bulk actions if needed */}
+          {showInvoiceModal && (
+            <AddInvoiceModal
+              isEdit={!!editInvoiceData}
+              invoiceData={editInvoiceData}
+              onClose={() => {
+                setShowInvoiceModal(false);
+                setEditInvoiceData(null);
+              }}
+            />
+          )}
         </div>
       )}
 
-      {showDeleteConfirm && (
-        <DeleteConfirmModal
-          show={showDeleteConfirm}
-          setShow={setShowDeleteConfirm}
-          onConfirm={confirmDeleteInvoice}
-        />
-      )}
-
-      {showInvoiceModal && (
-        <AddInvoiceModal
-          isEdit={true}
-          invoiceData={editInvoiceData}
-          onClose={() => {
-            setShowInvoiceModal(false);
-            setEditInvoiceData(null);
-          }}
-        />
-      )}
+      {role === "user" && <UserInvoicesPage />}
     </>
   );
 }

@@ -818,6 +818,7 @@ export const statusStyles = {
 
 export const statusColors = {
   "In Progress": "bg-blue-100 text-blue-700",
+  "not_started": "bg-blue-100 text-blue-700",
   Reviewed: "bg-yellow-100 text-yellow-700",
   Lead: "bg-yellow-100 text-yellow-600 border border-yellow-200",
   Completed: "bg-blue-100 text-blue-600 border border-blue-200",

@@ -58,8 +58,10 @@ const extractError = (err) =>
 
 // ➕ Add Task
 export const addTask = (taskData) => async (dispatch) => {
+  console.log(taskData);
   dispatch(taskRequest());
   try {
+    
     const { data } = await axios.post(`${baseURL}/tasks/create-task`, taskData);
     dispatch(taskSuccess(data.message));
     dispatch(fetchAllTasks());

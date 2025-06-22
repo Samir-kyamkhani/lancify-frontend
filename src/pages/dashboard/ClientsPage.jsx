@@ -627,7 +627,7 @@ export default function ClientsPage() {
       )}
       {showClientModal && (
         <AddClientModal
-          isEdit={true}
+          isEdit={!!editClientData}
           clientData={editClientData}
           onClose={() => {
             setShowClientModal(false);

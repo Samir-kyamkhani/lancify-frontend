@@ -6,6 +6,7 @@ import { addTask, editTask } from "../../../slices/taskSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllTeamMemders } from "../../../slices/authSlice";
 import Select from "react-select";
+import { clearMessages } from "../../../slices/projectSlice";
 
 export default function AddTaskModal({
   onSubmit,
@@ -16,23 +17,13 @@ export default function AddTaskModal({
 }) {
   const dispatch = useDispatch();
   const { allTeamMembers } = useSelector((state) => state.auth);
-  const { projects } = useSelector((state) => state.projectData);
+  const {
+    projects,
+    error: projectError,
+    success: projectSuccess,
+  } = useSelector((state) => state.projectData);
 
-  // Prepare options for Select components
-  const assigneeOptions =
-    allTeamMembers?.map((member) => ({
-      value: member.id,
-      label: member.name,
-      image: member.avatar || `/dummyProfileImg.webp`,
-    })) || [];
-
-  const projectOptions =
-    projects?.map((project) => ({
-      value: project.id,
-      label: project.title,
-    })) || [];
-
-  // Form state
+  const [localError, setLocalError] = useState(null);
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -42,55 +33,97 @@ export default function AddTaskModal({
     project: "",
   });
 
-  useEffect(() => {
-    setForm({
-      title: taskData.title || "",
-      description: taskData.description || "",
-      status: taskData.status || defaultStatus,
-      priority: taskData.priority || "medium",
-      assignee: taskData.userId || "",
-      project: taskData.projectId || "",
-    });
-  },[]);
-
+  // Fetch team members on mount
   useEffect(() => {
     dispatch(fetchAllTeamMemders());
   }, [dispatch]);
 
-  // Find selected options objects for React-Select based on form.assignee and form.project
+  // Populate form if editing
+  useEffect(() => {
+    if (isEdit && taskData) {
+      setForm({
+        title: taskData.title || "",
+        description: taskData.description || "",
+        status: taskData.status || defaultStatus,
+        priority: taskData.priority || "medium",
+        assignee: taskData.userId || "",
+        project: taskData.projectId || "",
+      });
+    }
+  }, [taskData, isEdit, defaultStatus]);
+
+  // Clear redux messages on unmount
+  useEffect(() => {
+    return () => {
+      dispatch(clearMessages());
+    };
+  }, [dispatch]);
+
+  // Close modal on success
+  useEffect(() => {
+    if (projectSuccess) {
+      onClose();
+    }
+  }, [projectSuccess, onClose]);
+
+  // Sync errors
+  useEffect(() => {
+    setLocalError(projectError);
+  }, [projectError]);
+
+  const assigneeOptions =
+    allTeamMembers?.map((member) => ({
+      value: member.id,
+      label: member.name,
+      image: member.avatar || "/dummyProfileImg.webp",
+    })) || [];
+
+  const projectOptions =
+    projects?.map((project) => ({
+      value: project.id,
+      label: project.title,
+    })) || [];
+
   const selectedAssignee =
     assigneeOptions.find((opt) => opt.value === form.assignee) || null;
-
   const selectedProject =
     projectOptions.find((opt) => opt.value === form.project) || null;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    if (localError) setLocalError(null);
   };
 
   const handleAssigneeChange = (selectedOption) => {
-    setForm((prev) => ({
-      ...prev,
-      assignee: selectedOption?.value || "",
-    }));
+    setForm((prev) => ({ ...prev, assignee: selectedOption?.value || "" }));
   };
 
   const handleProjectChange = (selectedOption) => {
-    setForm((prev) => ({
-      ...prev,
-      project: selectedOption?.value || "",
-    }));
+    setForm((prev) => ({ ...prev, project: selectedOption?.value || "" }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Find admin user
+    const adminMember = allTeamMembers?.find(
+      (m) => m.name?.toLowerCase() === "admin"
+    );
+
+    // Default to admin if no assignee
+    const taskPayload = {
+      ...form,
+      assignee: form.assignee || adminMember?.id || "",
+    };
+
     if (isEdit) {
-      await dispatch(editTask({ id: taskData.id, ...form }));
+      await dispatch(editTask({ id: taskData.id, ...taskPayload }));
     } else {
-      await dispatch(addTask(form));
+      await dispatch(addTask(taskPayload));
     }
-    onSubmit && onSubmit(form);
+
+    onSubmit?.(taskPayload);
     onClose();
   };
 
@@ -103,6 +136,12 @@ export default function AddTaskModal({
         <p className="text-sm text-gray-500 mb-4">
           {isEdit ? "Update the task details." : "Add a new task to the board."}
         </p>
+
+        {localError && (
+          <div className="bg-red-100 text-red-700 px-4 py-2 rounded mb-4 text-sm">
+            {localError}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <InputField
@@ -137,6 +176,7 @@ export default function AddTaskModal({
                 <option value="blocked">Blocked</option>
               </select>
             </div>
+
             <div className="w-full sm:w-1/2">
               <label className="block mb-1 font-medium">Priority</label>
               <select
@@ -164,13 +204,11 @@ export default function AddTaskModal({
               isClearable
               formatOptionLabel={(option) => (
                 <div className="flex items-center space-x-2">
-                  {option.image && (
-                    <img
-                      src={option.image}
-                      alt={option.label}
-                      className="w-6 h-6 rounded-full"
-                    />
-                  )}
+                  <img
+                    src={option.image}
+                    alt={option.label}
+                    className="w-6 h-6 rounded-full"
+                  />
                   <span>{option.label}</span>
                 </div>
               )}

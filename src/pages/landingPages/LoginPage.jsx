@@ -16,7 +16,7 @@ const LoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
 
   useEffect(() => {
-    if (user?.isEmailVerified || user?.isGoogleSignUp) {
+    if (user?.isEmailVerified || user?.isGoogleSignUp || user?.role === "user" || user?.role === "member") {
       navigate("/dashboard");
     }
   }, [user, navigate]);

@@ -51,43 +51,44 @@ export default function AddProjectModal({
   }, [dispatch]);
 
   const clientOptions = useMemo(() => {
-    return clients.map((client) => ({
-      value: client.id,
-      label: client.name,
-      image: client.image || DEFAULT_CLIENT_IMG,
+    return clients?.map((client) => ({
+      value: client?.id,
+      label: client?.name,
+      image: client?.image || DEFAULT_CLIENT_IMG,
     }));
   }, [clients]);
 
   const [form, setForm] = useState({
-    title: projectData.title || "",
+    title: projectData?.title || "",
     client: null,
-    startDate: projectData.startDate
-      ? new Date(projectData.startDate).toISOString().split("T")[0]
+    startDate: projectData?.startDate
+      ? new Date(projectData?.startDate).toISOString().split("T")[0]
       : "",
-    endDate: projectData.endDate
-      ? new Date(projectData.endDate).toISOString().split("T")[0]
+    endDate: projectData?.endDate
+      ? new Date(projectData?.endDate).toISOString().split("T")[0]
       : "",
-    status: projectData.status || "not_started",
-    description: projectData.description || "",
+    status: projectData?.status || "not_started",
+    description: projectData?.description || "",
   });
 
   const [showClientSelect, setShowClientSelect] = useState(true);
 
   useEffect(() => {
-    if (isEdit && clients.length && projectData.client) {
-      const matchedClient = clientOptions.find(
-        (opt) =>
-          opt.value ===
-          (typeof projectData.client === "object"
-            ? projectData.client.id
-            : projectData.client)
-      );
+    if (isEdit && clients.length && projectData && projectData.client) {
+      const clientId =
+        typeof projectData.client === "object"
+          ? projectData.client.id
+          : projectData.client;
+
+      const matchedClient = clientOptions.find((opt) => opt.value === clientId);
+
       setForm((prev) => ({ ...prev, client: matchedClient || null }));
+
       if (matchedClient) {
         setShowClientSelect(false); // hide if prefilled
       }
     }
-  }, [clients, clientOptions, isEdit, projectData.client]);
+  }, [clients, clientOptions, isEdit, projectData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -111,7 +112,7 @@ export default function AddProjectModal({
 
     const submitData = {
       ...form,
-      client: form.client.value,
+      client: form?.client.value,
     };
 
     await dispatch(addProject(submitData));
@@ -128,8 +129,8 @@ export default function AddProjectModal({
 
     const submitData = {
       ...form,
-      client: form.client.value,
-      id: projectData.id,
+      client: form?.client?.value,
+      id: projectData?.id,
     };
 
     // Dispatch update action
@@ -157,7 +158,7 @@ export default function AddProjectModal({
           <InputField
             label="Title"
             name="title"
-            value={form.title}
+            value={form?.title}
             onChange={handleChange}
             required
             placeholder="e.g., Website Redesign"
@@ -170,7 +171,7 @@ export default function AddProjectModal({
           {showClientSelect ? (
             <Select
               options={clientOptions}
-              value={form.client}
+              value={form?.client}
               onChange={handleClientChange}
               placeholder="Select a client"
               components={{
@@ -197,12 +198,12 @@ export default function AddProjectModal({
           ) : (
             <div className="flex items-center gap-2 bg-gray-100 p-2 rounded-md">
               <img
-                src={form.client?.image || DEFAULT_CLIENT_IMG}
-                alt={form.client?.label}
+                src={form?.client?.image || DEFAULT_CLIENT_IMG}
+                alt={form?.client?.label}
                 className="w-8 h-8 rounded-full object-cover"
               />
               <span className="text-gray-700 font-medium">
-                {form.client?.label}
+                {form?.client?.label}
               </span>
               <button
                 type="button"
@@ -221,7 +222,7 @@ export default function AddProjectModal({
             label="Start Date"
             name="startDate"
             type="date"
-            value={form.startDate}
+            value={form?.startDate}
             onChange={handleChange}
             required
           />
@@ -230,7 +231,7 @@ export default function AddProjectModal({
             label="End Date"
             name="endDate"
             type="date"
-            value={form.endDate}
+            value={form?.endDate}
             onChange={handleChange}
             required
           />
@@ -260,7 +261,7 @@ export default function AddProjectModal({
           <TextareaField
             label="Description"
             name="description"
-            value={form.description}
+            value={form?.description}
             onChange={handleChange}
             placeholder="Optional: Brief description of the project..."
           />

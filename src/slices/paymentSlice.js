@@ -63,7 +63,7 @@ export const addInvoice = (invoiceData) => async (dispatch) => {
   dispatch(requestStart());
   try {
     const { data } = await axios.post(
-      `${baseURL}/payments/add-invoice`,
+      `${baseURL}/invoices/add-invoice`,
       invoiceData,
       { withCredentials: true }
     );
@@ -77,7 +77,7 @@ export const addInvoice = (invoiceData) => async (dispatch) => {
 export const fetchAllInvoices = () => async (dispatch) => {
   dispatch(requestStart());
   try {
-    const { data } = await axios.get(`${baseURL}/payments/get-all-invoices`);
+    const { data } = await axios.get(`${baseURL}/invoices/get-all-invoices`);
     dispatch(setInvoices(data.data));
     dispatch(requestSuccess("Fetched all invoices"));
   } catch (err) {
@@ -89,7 +89,7 @@ export const fetchSingleInvoice = (id) => async (dispatch) => {
   dispatch(requestStart());
   try {
     const { data } = await axios.get(
-      `${baseURL}/payments/get-single-invoice/${id}`
+      `${baseURL}/invoices/get-single-invoice/${id}`
     );
     dispatch(setSingleInvoice(data.data));
     dispatch(requestSuccess("Fetched invoice"));
@@ -102,7 +102,7 @@ export const editInvoice = (updatedData) => async (dispatch) => {
   dispatch(requestStart());
   try {
     const { data } = await axios.put(
-      `${baseURL}/payments/edit-invoice/${updatedData.id}`,
+      `${baseURL}/invoices/edit-invoice/${updatedData.id}`,
       updatedData,
       { withCredentials: true }
     );
@@ -117,7 +117,7 @@ export const deleteInvoice = (id) => async (dispatch) => {
   dispatch(requestStart());
   try {
     const { data } = await axios.delete(
-      `${baseURL}/payments/delete-invoice/${id}`,
+      `${baseURL}/invoices/delete-invoice/${id}`,
       { withCredentials: true }
     );
     dispatch(requestSuccess(data.message));

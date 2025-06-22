@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import HeaderSection from "../../components/dashboard/HeaderSection";
 import ProjectOverview from "../../components/dashboard/ProjectOverview";
 import AddTaskModal from "../../components/dashboard/Form/AddTaskModal";
 import TaskColumn from "../../components/dashboard/TaskColumn";
-import { BsPlus } from "react-icons/bs";
 import { getUserRole } from "../../settings";
 import UserProjectPage from "../clientDashboard/UserProjectPage";
 import { useDispatch, useSelector } from "react-redux";
